@@ -1,1 +1,1 @@
-# parent-spring-boot-starter
+# starters
