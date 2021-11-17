@@ -32,7 +32,7 @@
 		<server>
 			<id>github</id>
 			<username>Sasha192</username>
-			<password>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</password>
+			<password>${env.GITHUB_TOKEN_PACKAGES}</password>
 		</server>
 	</servers>
 
