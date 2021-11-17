@@ -1,0 +1,24 @@
+wp37-multitenancy-starter:
+  enabled: true
+  multitenancy: SCHEMA_PER_TENANT
+  defaultSchema: public
+  cache:
+    maxSize: 20
+    expiration: 30
+    timeUnit: MINUTES
+  defaultScan:
+    enabled: true
+    repositoryPackages: org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
+    entityPackages:
+      - org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
+  tenantScan:
+    enabled: false
+    repositoryPackages: org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
+    entityPackages:
+      - org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
+  default-liquibase:
+    enabled: true
+    changeLog: classpath:migrations-default/default_schema-changelog.xml
+  multitenancy-liquibase:
+    enabled: true
+    changeLog: classpath:migrations-tenant/tenants-changelog.xml

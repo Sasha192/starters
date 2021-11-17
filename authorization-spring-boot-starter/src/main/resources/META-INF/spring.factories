@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.wpstarters37.authorizationstarter.StarterAuthorizationServerAutoConfigurer
+
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  org.wpstarters37.authorizationstarter.YamlEnvironmentBeanProcessor

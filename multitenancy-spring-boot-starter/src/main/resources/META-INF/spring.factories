@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.wpstarters.multitenancyspringbootstarter.MultitenancyStarterConfiguration,\
+  org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.SchemaPerCompanyAutoConfiguration
+
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  org.wpstarters.multitenancyspringbootstarter.YamlEnvironmentBeanProcessor
