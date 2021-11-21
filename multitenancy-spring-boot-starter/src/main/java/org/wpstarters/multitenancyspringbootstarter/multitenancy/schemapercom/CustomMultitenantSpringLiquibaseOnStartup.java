@@ -19,25 +19,25 @@ public class CustomMultitenantSpringLiquibaseOnStartup implements InitializingBe
     private static final Logger logger = LoggerFactory.getLogger(CustomMultitenantSpringLiquibaseOnStartup.class);
 
     private final SimpleTenantRepository tenantRepository;
-    private final boolean liquibaseForTenants;
+    private final boolean runLiquibaseForTenants;
     private final IMigrationsService migrationsService;
     private final String defaultSchema;
 
     public CustomMultitenantSpringLiquibaseOnStartup(SimpleTenantRepository tenantRepository,
                                                      IMigrationsService migrationsService,
                                                      StarterConfigurationProperties starterProperties,
-                                                     boolean liquibaseForTenants) {
+                                                     boolean runLiquibaseForTenants) {
         this.tenantRepository = tenantRepository;
         this.migrationsService = migrationsService;
         this.defaultSchema = starterProperties.getDefaultSchema();
-        this.liquibaseForTenants = liquibaseForTenants;
+        this.runLiquibaseForTenants = runLiquibaseForTenants;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         logger.info("Schema based multitenancy enabled");
         migrationsService.runMigrationsOnDefaultTenant();
-        if (liquibaseForTenants) {
+        if (runLiquibaseForTenants) {
             List<? extends Tenant<?>> tenants = getAllTenantsExceptDefaultSchema(defaultSchema);
             runOnTenants(tenants);
         }

@@ -5,7 +5,6 @@ import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -47,9 +46,6 @@ public class SchemaPerCompanyAutoConfiguration {
 
     @Bean("multitenancyLiquibaseProperties")
     @ConfigurationProperties(prefix = "wp37-multitenancy-starter.multitenancy-liquibase")
-    @ConditionalOnProperty(name = "wp37-multitenancy-starter.multitenancy-liquibase.enabled",
-            havingValue = "true",
-            matchIfMissing = true)
     public CustomLiquibaseProperties multitenancyLiquibaseProperties() {
         return new CustomLiquibaseProperties();
     }
@@ -57,42 +53,30 @@ public class SchemaPerCompanyAutoConfiguration {
 
     @Bean("defaultLiquibaseProperties")
     @ConfigurationProperties(prefix = "wp37-multitenancy-starter.default-liquibase")
-    @ConditionalOnProperty(name = "wp37-multitenancy-starter.default-liquibase.enabled",
-            havingValue = "true",
-            matchIfMissing = true)
     public CustomLiquibaseProperties defaultLiquibaseProperties() {
         return new CustomLiquibaseProperties();
     }
 
     @Bean
-    @ConditionalOnProperty(name = {
-            "wp37-multitenancy-starter.default-liquibase.enabled"},
-            havingValue = "true",
-            matchIfMissing = true)
     public IMigrationPathProvider migrationPathProvider() {
         return new MigrationPathsProvider(new PathMatchingResourcePatternResolver());
     }
 
     @Bean("multiTenantSpringLiquibase")
-    @ConditionalOnProperty(name = "wp37-multitenancy-starter.default-liquibase.enabled",
-            havingValue = "true",
-            matchIfMissing = true)
     public CustomMultitenantSpringLiquibaseOnStartup multiTenantSpringLiquibase(SimpleTenantRepository tenantRepository,
                                                                                 IMigrationsService migrationsService,
                                                                                 StarterConfigurationProperties starterProperties,
-                                                                                @Value("${wp37-multitenancy-starter.tenantScan.enabled}") boolean liquibaseForTenants) {
+                                                                                @Value("${wp37-multitenancy-starter.runLiquibaseForTenants}")
+                                                                                            boolean runLiquibaseForTenants) {
         return new CustomMultitenantSpringLiquibaseOnStartup(
                 tenantRepository,
                 migrationsService,
                 starterProperties,
-                liquibaseForTenants
+                runLiquibaseForTenants
         );
     }
 
     @Bean
-    @ConditionalOnProperty(name = "wp37-multitenancy-starter.default-liquibase.enabled",
-            havingValue = "true",
-            matchIfMissing = true)
     public IMigrationsService migrationsService(DataSource dataSource,
                                                 JdbcTemplate jdbcTemplate,
                                                 @Qualifier("multitenancyLiquibaseProperties")

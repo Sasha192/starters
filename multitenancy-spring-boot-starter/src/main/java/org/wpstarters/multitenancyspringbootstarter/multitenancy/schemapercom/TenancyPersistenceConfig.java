@@ -27,7 +27,6 @@ import java.util.Map;
 
 @Configuration
 @Conditional(SchemaPerTenant.class)
-@ConditionalOnProperty(name = "${wp37-multitenancy-starter.tenantScan.enabled}", havingValue = "true")
 public class TenancyPersistenceConfig {
 
     private final ConfigurableListableBeanFactory beanFactory;

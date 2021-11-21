@@ -1,46 +1,27 @@
 package org.wpstarters.multitenancyspringbootstarter.multitenancy.domain;
 
 import liquibase.exception.LiquibaseException;
-import liquibase.integration.spring.SpringLiquibase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.stereotype.Service;
 import org.wpstarters.multitenancyspringbootstarter.Tenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.exceptions.TenantCreationException;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders.IMigrationsService;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 import java.util.UUID;
-
-import static org.wpstarters.multitenancyspringbootstarter.multitenancy.SpringLiquibaseBuilder.buildDefault;
 
 @Service
 public class TenantManagementService implements ITenantManagementService<UUID> {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantManagementService.class);
 
-    private final DataSource dataSource;
-    private final JdbcTemplate jdbcTemplate;
-    private final LiquibaseProperties liquibaseProperties;
-    private final ResourceLoader resourceLoader;
     private final SimpleTenantRepository tenantRepository;
+    private final IMigrationsService migrationsService;
 
-    public TenantManagementService(DataSource dataSource,
-                                       JdbcTemplate jdbcTemplate,
-                                       @Qualifier("multitenancyLiquibaseProperties") LiquibaseProperties liquibaseProperties,
-                                       ResourceLoader resourceLoader,
-                                       SimpleTenantRepository tenantRepository) {
-        this.dataSource = dataSource;
-        this.jdbcTemplate = jdbcTemplate;
-        this.liquibaseProperties = liquibaseProperties;
-        this.resourceLoader = resourceLoader;
+    public TenantManagementService(SimpleTenantRepository tenantRepository, IMigrationsService migrationsService) {
         this.tenantRepository = tenantRepository;
+        this.migrationsService = migrationsService;
     }
 
     @Override
@@ -48,32 +29,46 @@ public class TenantManagementService implements ITenantManagementService<UUID> {
 
         SimpleTenant tenant = new SimpleTenant.Builder()
                 .id(UUID.randomUUID())
+                .schema(generateSchema())
                 .active(true)
                 .build();
-        tenant.setSchema(
-                UUID.randomUUID().toString().replace("-","")
-        );
 
         try {
-            createSchema(tenant.getSchema());
-            runLiquibase(dataSource, tenant.getSchema());
+
+            migrationsService.createSchema(tenant.getSchema());
+            migrationsService.runMigrationsOnTenant(tenant);
+            tenantRepository.save(tenant);
+            return tenant;
+
         } catch (DataAccessException e) {
+
             throw new TenantCreationException("Error when creating schema: " + tenant.getSchema(), e);
+
         } catch (LiquibaseException e) {
+
             throw new TenantCreationException("Error when populating schema: ", e);
+
+        } catch (Exception e) {
+
+            logger.error("Exception occurred while running Migrations on {} tenant", tenant.getSchema(), e);
+
         }
-        tenantRepository.save(tenant);
 
-        return tenant;
+        return new SimpleTenant();
     }
 
-    private void createSchema(String schema) {
-        jdbcTemplate.execute((StatementCallback<Boolean>) stmt -> stmt.execute("CREATE SCHEMA " + schema));
-    }
+    private String generateSchema() {
 
-    private void runLiquibase(DataSource dataSource, String schema) throws LiquibaseException {
-        //SpringLiquibase liquibase = buildDefault(dataSource, schema, resourceLoader, liquibaseProperties);
-        //liquibase.afterPropertiesSet();
+        String schema = UUID.randomUUID().toString().replace("-","");
+        int schemaLength = schema.length();
+        if ((System.nanoTime() & 1L) == 0L) {
+            schema = schema.substring(0, schemaLength);
+        } else {
+            schema = schema.substring(schemaLength);
+        }
+
+        return schema;
+
     }
 
 }
