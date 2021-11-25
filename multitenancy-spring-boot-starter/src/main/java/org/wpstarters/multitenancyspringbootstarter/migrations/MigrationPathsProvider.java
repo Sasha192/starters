@@ -1,4 +1,4 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders;
+package org.wpstarters.multitenancyspringbootstarter.migrations;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

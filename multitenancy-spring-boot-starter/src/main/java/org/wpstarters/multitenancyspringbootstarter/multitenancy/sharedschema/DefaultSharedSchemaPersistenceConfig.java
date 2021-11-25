@@ -1,4 +1,4 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom;
+package org.wpstarters.multitenancyspringbootstarter.multitenancy.sharedschema;
 
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,12 +23,8 @@ import java.util.Map;
 
 @Configuration
 @Conditional(SchemaPerTenant.class)
-@EnableJpaRepositories(
-        basePackages = { "org.wpstarters.multitenancyspringbootstarter.multitenancy.domain" },
-        entityManagerFactoryRef = "defaultEntityManagerFactory",
-        transactionManagerRef = "defaultTransactionManager"
-)
-public class DefaultPersistenceConfig {
+@EnableJpaRepositories
+public class DefaultSharedSchemaPersistenceConfig {
 
     private final ConfigurableListableBeanFactory beanFactory;
     private final JpaProperties jpaProperties;
@@ -36,7 +32,7 @@ public class DefaultPersistenceConfig {
     private final String defaultSchema;
 
 
-    public DefaultPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
+    public DefaultSharedSchemaPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
                                     JpaProperties jpaProperties,
                                     StarterConfigurationProperties configurationProperties) {
         this.beanFactory = beanFactory;
@@ -45,8 +41,7 @@ public class DefaultPersistenceConfig {
         this.defaultSchema = configurationProperties.getDefaultSchema();
     }
 
-    @Bean(value = "defaultEntityManagerFactory") // do not change!!!
-    // @see org.37wp-starters.repositories-processor
+    @Bean(value = "defaultEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean defaultEntityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
@@ -67,8 +62,7 @@ public class DefaultPersistenceConfig {
         return em;
     }
 
-    @Bean(value = "defaultTransactionManager") // do not change!!!
-    // @see org.37wp-starters.repositories-processor
+    @Bean(value = "defaultTransactionManager")
     public JpaTransactionManager defaultTransactionManager(@Qualifier("defaultEntityManagerFactory") EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);

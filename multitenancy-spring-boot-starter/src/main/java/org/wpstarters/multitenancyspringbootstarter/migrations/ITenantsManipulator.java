@@ -1,4 +1,4 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders;
+package org.wpstarters.multitenancyspringbootstarter.migrations;
 
 import org.wpstarters.multitenancyspringbootstarter.Tenant;
 
