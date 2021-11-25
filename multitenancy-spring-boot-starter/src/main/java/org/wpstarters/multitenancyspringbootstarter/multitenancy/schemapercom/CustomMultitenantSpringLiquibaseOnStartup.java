@@ -6,7 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.wpstarters.multitenancyspringbootstarter.Tenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.SimpleTenantRepository;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders.IMigrationsService;
+import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationsService;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;

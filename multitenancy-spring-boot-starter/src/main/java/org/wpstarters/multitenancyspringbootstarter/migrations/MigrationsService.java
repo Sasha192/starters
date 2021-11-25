@@ -1,4 +1,4 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders;
+package org.wpstarters.multitenancyspringbootstarter.migrations;
 
 import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;

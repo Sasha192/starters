@@ -7,7 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.wpstarters.multitenancyspringbootstarter.Tenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.exceptions.TenantCreationException;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders.IMigrationsService;
+import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationsService;
 
 import java.util.UUID;
 

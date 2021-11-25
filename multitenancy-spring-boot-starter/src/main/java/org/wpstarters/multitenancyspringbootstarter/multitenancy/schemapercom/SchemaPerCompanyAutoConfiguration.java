@@ -16,17 +16,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.SchemaPerTenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.SimpleTenantRepository;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders.IMigrationPathProvider;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders.IMigrationsService;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders.MigrationPathsProvider;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.migrationsproviders.MigrationsService;
+import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationPathProvider;
+import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationsService;
+import org.wpstarters.multitenancyspringbootstarter.migrations.MigrationPathsProvider;
+import org.wpstarters.multitenancyspringbootstarter.migrations.MigrationsService;
 
 import javax.sql.DataSource;
 
 @Configuration
 @Conditional(SchemaPerTenant.class)
 @Import(value = {
-        DefaultPersistenceConfig.class,
+        DefaultSchemaPerCompanyPersistenceConfig.class,
         TenancyPersistenceConfig.class
 })
 public class SchemaPerCompanyAutoConfiguration {

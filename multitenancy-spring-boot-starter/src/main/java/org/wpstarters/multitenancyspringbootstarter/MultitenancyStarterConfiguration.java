@@ -1,5 +1,6 @@
 package org.wpstarters.multitenancyspringbootstarter;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigur
 @ConditionalOnProperty(value = "wp37-multitenancy-starter.enabled",
 		havingValue = "true",
 		matchIfMissing = true)
+@SpringBootApplication
 public class MultitenancyStarterConfiguration {
 
 	@Bean
