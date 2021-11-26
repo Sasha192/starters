@@ -1,6 +1,6 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.domain;
+package org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud;
 
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
+import org.wpstarters.commonwebstarter.Tenant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tenants")
-public class SimpleTenant implements Tenant<UUID> {
+public class SchemaTenant implements Tenant<UUID> {
 
     @Id
     @Column(name = "id")
@@ -21,6 +21,7 @@ public class SimpleTenant implements Tenant<UUID> {
     @Size(max = 32)
     @Column(name = "schema")
     private String schema;
+
     private boolean active;
 
     @Override
@@ -32,7 +33,6 @@ public class SimpleTenant implements Tenant<UUID> {
         this.id = id;
     }
 
-    @Override
     public String getSchema() {
         return schema;
     }
@@ -74,18 +74,18 @@ public class SimpleTenant implements Tenant<UUID> {
             return this;
         }
 
-        public SimpleTenant build() {
-            SimpleTenant simpleTenant = new SimpleTenant();
-            simpleTenant.setId(id);
-            simpleTenant.setSchema(schema);
-            simpleTenant.setActive(active);
-            return simpleTenant;
+        public SchemaTenant build() {
+            SchemaTenant schemaTenant = new SchemaTenant();
+            schemaTenant.setId(id);
+            schemaTenant.setSchema(schema);
+            schemaTenant.setActive(active);
+            return schemaTenant;
         }
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", SimpleTenant.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", SchemaTenant.class.getSimpleName() + "[", "]")
                 .add("id=" + id)
                 .add("schema='" + schema + "'")
                 .add("active=" + active)

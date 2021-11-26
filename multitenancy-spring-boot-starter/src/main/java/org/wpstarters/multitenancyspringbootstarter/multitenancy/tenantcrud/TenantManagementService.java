@@ -1,11 +1,11 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.domain;
+package org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud;
 
 import liquibase.exception.LiquibaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
+import org.wpstarters.commonwebstarter.Tenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.exceptions.TenantCreationException;
 import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationsService;
 
@@ -16,10 +16,10 @@ public class TenantManagementService implements ITenantManagementService<UUID> {
 
     private static final Logger logger = LoggerFactory.getLogger(TenantManagementService.class);
 
-    private final SimpleTenantRepository tenantRepository;
+    private final SchemaTenantRepository tenantRepository;
     private final IMigrationsService migrationsService;
 
-    public TenantManagementService(SimpleTenantRepository tenantRepository, IMigrationsService migrationsService) {
+    public TenantManagementService(SchemaTenantRepository tenantRepository, IMigrationsService migrationsService) {
         this.tenantRepository = tenantRepository;
         this.migrationsService = migrationsService;
     }
@@ -27,7 +27,7 @@ public class TenantManagementService implements ITenantManagementService<UUID> {
     @Override
     public Tenant<UUID> createTenant() {
 
-        SimpleTenant tenant = new SimpleTenant.Builder()
+        SchemaTenant tenant = new SchemaTenant.Builder()
                 .id(UUID.randomUUID())
                 .schema(generateSchema())
                 .active(true)
@@ -54,7 +54,7 @@ public class TenantManagementService implements ITenantManagementService<UUID> {
 
         }
 
-        return new SimpleTenant();
+        return new SchemaTenant();
     }
 
     private String generateSchema() {

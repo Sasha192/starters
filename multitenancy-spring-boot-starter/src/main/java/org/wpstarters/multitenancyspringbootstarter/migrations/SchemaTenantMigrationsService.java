@@ -9,9 +9,8 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.SimpleTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.SchemaTenant;
 
 import javax.sql.DataSource;
 import java.net.URI;
@@ -20,9 +19,9 @@ import java.util.List;
 
 import static org.wpstarters.multitenancyspringbootstarter.multitenancy.SpringLiquibaseBuilder.buildDefault;
 
-public class MigrationsService implements IMigrationsService, ResourceLoaderAware {
+public class SchemaTenantMigrationsService implements IMigrationsService<SchemaTenant>, ResourceLoaderAware {
 
-    private static final Logger logger = LoggerFactory.getLogger(MigrationsService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SchemaTenantMigrationsService.class);
     private static final String CREATE_SCHEMA = "CREATE SCHEMA %s";
     private static final String DROP_SCHEMA_IF_EXIST = "DROP SCHEMA IF EXISTS %s";
 
@@ -34,12 +33,12 @@ public class MigrationsService implements IMigrationsService, ResourceLoaderAwar
     private final DataSource dataSource;
     private ResourceLoader resourceLoader;
 
-    public MigrationsService(JdbcTemplate jdbcTemplate,
-                             LiquibaseProperties tenantProperties,
-                             LiquibaseProperties defaultProperties,
-                             StarterConfigurationProperties starterProperties,
-                             IMigrationPathProvider migrationPathProvider,
-                             DataSource dataSource) {
+    public SchemaTenantMigrationsService(JdbcTemplate jdbcTemplate,
+                                         LiquibaseProperties tenantProperties,
+                                         LiquibaseProperties defaultProperties,
+                                         StarterConfigurationProperties starterProperties,
+                                         IMigrationPathProvider migrationPathProvider,
+                                         DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.tenantProperties = tenantProperties;
         this.defaultProperties = defaultProperties;
@@ -61,7 +60,7 @@ public class MigrationsService implements IMigrationsService, ResourceLoaderAwar
     }
 
     @Override
-    public void runMigrationsOnTenant(Tenant<?> tenant) throws LiquibaseException {
+    public void runMigrationsOnTenant(SchemaTenant tenant) throws LiquibaseException {
         List<URI> tenantsMigrationsPaths = migrationPathProvider.tenantsMigrationsPaths();
         runMigrations(tenant, tenantProperties, tenantsMigrationsPaths);
     }
@@ -69,7 +68,7 @@ public class MigrationsService implements IMigrationsService, ResourceLoaderAwar
     @Override
     public void runMigrationsOnDefaultTenant()
             throws LiquibaseException {
-        Tenant<?> defaultTenant = new SimpleTenant.Builder()
+        SchemaTenant defaultTenant = new SchemaTenant.Builder()
                 .schema(starterProperties.getDefaultSchema())
                 .active(true)
                 .build();
@@ -82,7 +81,7 @@ public class MigrationsService implements IMigrationsService, ResourceLoaderAwar
         this.resourceLoader = resourceLoader;
     }
 
-    private void runMigrations(Tenant<?> tenant,
+    private void runMigrations(SchemaTenant tenant,
                                LiquibaseProperties liquibaseProperties,
                                List<URI> migrationsUris) throws LiquibaseException {
         for (URI migrationUri: migrationsUris) {

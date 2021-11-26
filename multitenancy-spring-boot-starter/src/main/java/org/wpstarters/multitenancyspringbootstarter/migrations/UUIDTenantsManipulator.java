@@ -3,9 +3,9 @@ package org.wpstarters.multitenancyspringbootstarter.migrations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.SimpleTenant;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.SimpleTenantRepository;
+import org.wpstarters.commonwebstarter.Tenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.SchemaTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.SchemaTenantRepository;
 
 import javax.annotation.CheckForNull;
 import java.util.UUID;
@@ -14,11 +14,11 @@ public class UUIDTenantsManipulator implements ITenantsManipulator<UUID> {
 
     private static final Logger logger = LoggerFactory.getLogger(UUIDTenantsManipulator.class);
 
-    private final SimpleTenantRepository tenantRepository;
-    private final IMigrationsService migrationsService;
+    private final SchemaTenantRepository tenantRepository;
+    private final IMigrationsService<SchemaTenant> migrationsService;
 
-    public UUIDTenantsManipulator(SimpleTenantRepository tenantRepository,
-                                  IMigrationsService migrationsService) {
+    public UUIDTenantsManipulator(SchemaTenantRepository tenantRepository,
+                                  IMigrationsService<SchemaTenant> migrationsService) {
         this.tenantRepository = tenantRepository;
         this.migrationsService = migrationsService;
     }
@@ -27,7 +27,7 @@ public class UUIDTenantsManipulator implements ITenantsManipulator<UUID> {
     @CheckForNull
     public Tenant<UUID> createTenant() {
         UUID tenantId = UUID.randomUUID();
-        SimpleTenant newTenant = new SimpleTenant.Builder()
+        SchemaTenant newTenant = new SchemaTenant.Builder()
                 .id(tenantId)
                 .active(true)
                 .schema(generateSchema(tenantId))

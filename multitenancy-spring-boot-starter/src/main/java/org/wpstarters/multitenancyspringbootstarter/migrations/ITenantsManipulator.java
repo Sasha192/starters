@@ -1,6 +1,6 @@
 package org.wpstarters.multitenancyspringbootstarter.migrations;
 
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
+import org.wpstarters.commonwebstarter.Tenant;
 
 public interface ITenantsManipulator<T> {
 

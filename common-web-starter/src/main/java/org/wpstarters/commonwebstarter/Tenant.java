@@ -1,4 +1,4 @@
-package org.wpstarters.multitenancyspringbootstarter;
+package org.wpstarters.commonwebstarter;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public interface Tenant<ID> {
 
     ID getId();
-
-    String getSchema();
 
     boolean isActive();
 

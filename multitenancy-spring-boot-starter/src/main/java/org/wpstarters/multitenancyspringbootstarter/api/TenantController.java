@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.TenantManagementService;
+import org.wpstarters.commonwebstarter.Tenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.TenantManagementService;
 
 import java.util.UUID;
 
