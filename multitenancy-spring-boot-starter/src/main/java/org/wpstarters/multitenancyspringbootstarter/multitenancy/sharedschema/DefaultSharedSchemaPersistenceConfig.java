@@ -7,13 +7,12 @@ import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.SchemaPerTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.SharedSchema;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
 
 import javax.persistence.EntityManagerFactory;
@@ -22,8 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@Conditional(SchemaPerTenant.class)
-@EnableJpaRepositories
+@Conditional(SharedSchema.class)
 public class DefaultSharedSchemaPersistenceConfig {
 
     private final ConfigurableListableBeanFactory beanFactory;

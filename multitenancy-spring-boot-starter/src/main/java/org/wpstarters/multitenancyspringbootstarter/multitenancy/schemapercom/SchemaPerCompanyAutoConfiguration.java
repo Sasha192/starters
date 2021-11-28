@@ -15,11 +15,11 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.SchemaPerTenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.SimpleTenantRepository;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantManagementService;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantReadRepository;
 import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationPathProvider;
-import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationsService;
 import org.wpstarters.multitenancyspringbootstarter.migrations.MigrationPathsProvider;
-import org.wpstarters.multitenancyspringbootstarter.migrations.MigrationsService;
+import org.wpstarters.multitenancyspringbootstarter.migrations.SchemaTenantMigrationsService;
 
 import javax.sql.DataSource;
 
@@ -39,7 +39,7 @@ public class SchemaPerCompanyAutoConfiguration {
 
     @Bean("tenantConnectionProvider")
     public MultiTenantConnectionProvider tenantConnectionProvider(DataSource datasource,
-                                                                  SimpleTenantRepository tenantRepository,
+                                                                  SchemaTenantReadRepository tenantRepository,
                                                                   StarterConfigurationProperties properties) {
         return new CustomMultiTenantConnectionProvider(datasource, tenantRepository, properties.getCache());
     }
@@ -63,8 +63,8 @@ public class SchemaPerCompanyAutoConfiguration {
     }
 
     @Bean("multiTenantSpringLiquibase")
-    public CustomMultitenantSpringLiquibaseOnStartup multiTenantSpringLiquibase(SimpleTenantRepository tenantRepository,
-                                                                                IMigrationsService migrationsService,
+    public CustomMultitenantSpringLiquibaseOnStartup multiTenantSpringLiquibase(SchemaTenantReadRepository tenantRepository,
+                                                                                SchemaTenantMigrationsService migrationsService,
                                                                                 StarterConfigurationProperties starterProperties,
                                                                                 @Value("${wp37-multitenancy-starter.runLiquibaseForTenants}")
                                                                                             boolean runLiquibaseForTenants) {
@@ -77,14 +77,20 @@ public class SchemaPerCompanyAutoConfiguration {
     }
 
     @Bean
-    public IMigrationsService migrationsService(DataSource dataSource,
+    public SchemaTenantMigrationsService migrationsService(DataSource dataSource,
                                                 JdbcTemplate jdbcTemplate,
                                                 @Qualifier("multitenancyLiquibaseProperties")
                                                 @Autowired(required = false) LiquibaseProperties tenantProperties,
                                                 IMigrationPathProvider migrationPathProvider,
                                                 @Qualifier("defaultLiquibaseProperties") LiquibaseProperties defaultProperties,
                                                 StarterConfigurationProperties starterProperties) {
-        return new MigrationsService(jdbcTemplate, tenantProperties, defaultProperties, starterProperties, migrationPathProvider, dataSource);
+        return new SchemaTenantMigrationsService(jdbcTemplate, tenantProperties, defaultProperties, starterProperties, migrationPathProvider, dataSource);
+    }
+
+    @Bean
+    public SchemaTenantManagementService schemaTenantManagementService(SchemaTenantReadRepository tenantRepository,
+                                                                       SchemaTenantMigrationsService migrationsService) {
+        return new SchemaTenantManagementService(tenantRepository, migrationsService);
     }
 
 }

@@ -8,14 +8,21 @@ import javax.servlet.http.HttpServletResponse;
 
 class TenantContextInterceptor implements HandlerInterceptor {
 
-    private static final String TENANT_HEADER_NAME = "X-TENANT-CONTEXT";
+    private static final String TENANT_HEADER_NAME = "X-TENANT-ID";
+
+    private final ITenantIDResolver<? extends Tenant<?>> tenantIDResolver;
+
+    public TenantContextInterceptor(ITenantIDResolver<? extends Tenant<?>> tenantIDResolver) {
+        this.tenantIDResolver = tenantIDResolver;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) {
-        String tenant = request.getHeader(TENANT_HEADER_NAME);
-        if (tenant != null) {
+        String tenantId = request.getHeader(TENANT_HEADER_NAME);
+        if (tenantId != null) {
+            String tenant = tenantIDResolver.resolveTenant(tenantId);
             TenantContext.setTenantContext(tenant);
         }
         return true;

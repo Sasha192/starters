@@ -24,7 +24,7 @@ import java.util.Map;
 @Configuration
 @Conditional(SchemaPerTenant.class)
 @EnableJpaRepositories(
-        basePackages = { "org.wpstarters.multitenancyspringbootstarter.multitenancy.domain" },
+        basePackages = {"org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud"},
         entityManagerFactoryRef = "defaultEntityManagerFactory",
         transactionManagerRef = "defaultTransactionManager"
 )

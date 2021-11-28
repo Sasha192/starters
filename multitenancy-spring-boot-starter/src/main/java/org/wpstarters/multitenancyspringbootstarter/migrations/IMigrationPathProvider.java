@@ -7,6 +7,6 @@ public interface IMigrationPathProvider {
 
     List<URI> tenantsMigrationsPaths();
 
-    List<URI> defaultSchemaMigrationsPaths();
+    List<URI> defaultMigrationsPaths();
 
 }

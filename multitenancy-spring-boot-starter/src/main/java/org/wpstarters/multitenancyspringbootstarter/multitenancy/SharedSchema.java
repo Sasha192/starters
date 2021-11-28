@@ -4,6 +4,6 @@ public class SharedSchema extends MultitenancyConditional {
 
     @Override
     protected Multitenancy getMultitenancy() {
-        return Multitenancy.SHARED_DATABASE;
+        return Multitenancy.SHARED_SCHEMA;
     }
 }

@@ -1,33 +1,38 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.domain;
+package org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant;
 
 import liquibase.exception.LiquibaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
+import org.wpstarters.commonwebstarter.Tenant;
+import org.wpstarters.multitenancyspringbootstarter.migrations.SchemaTenantMigrationsService;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.exceptions.TenantCreationException;
-import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationsService;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.ITenantManagementService;
 
+import javax.annotation.CheckReturnValue;
 import java.util.UUID;
 
-@Service
-public class TenantManagementService implements ITenantManagementService<UUID> {
+public class SchemaTenantManagementService implements ITenantManagementService<UUID> {
 
-    private static final Logger logger = LoggerFactory.getLogger(TenantManagementService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SchemaTenantManagementService.class);
 
-    private final SimpleTenantRepository tenantRepository;
-    private final IMigrationsService migrationsService;
+    private final SchemaTenantReadRepository tenantRepository;
+    private final SchemaTenantMigrationsService migrationsService;
 
-    public TenantManagementService(SimpleTenantRepository tenantRepository, IMigrationsService migrationsService) {
+    public SchemaTenantManagementService(SchemaTenantReadRepository tenantRepository,
+                                         SchemaTenantMigrationsService migrationsService) {
         this.tenantRepository = tenantRepository;
         this.migrationsService = migrationsService;
     }
 
+    /**
+     * @return fully initialized tenant or empty Tenant - means something bad happened
+     */
     @Override
+    @CheckReturnValue
     public Tenant<UUID> createTenant() {
 
-        SimpleTenant tenant = new SimpleTenant.Builder()
+        SchemaTenant tenant = new SchemaTenant.Builder()
                 .id(UUID.randomUUID())
                 .schema(generateSchema())
                 .active(true)
@@ -37,7 +42,7 @@ public class TenantManagementService implements ITenantManagementService<UUID> {
 
             migrationsService.createSchema(tenant.getSchema());
             migrationsService.runMigrationsOnTenant(tenant);
-            tenantRepository.save(tenant);
+            tenant = tenantRepository.save(tenant);
             return tenant;
 
         } catch (DataAccessException e) {
@@ -54,7 +59,8 @@ public class TenantManagementService implements ITenantManagementService<UUID> {
 
         }
 
-        return new SimpleTenant();
+        migrationsService.deleteSchema(tenant.getSchema());
+        return new SchemaTenant();
     }
 
     private String generateSchema() {
