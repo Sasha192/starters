@@ -18,7 +18,7 @@ public class MigrationPathsProvider implements IMigrationPathProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MigrationPathsProvider.class);
 
-    private static final String DEFAULT_SCHEMA_CHANGELOG = "classpath*:**/default_schema-changelog.xml";
+    private static final String DEFAULT_CHANGELOG = "classpath*:**/default-changelog.xml";
 
     protected static final String TENANTS_CHANGELOG = "classpath*:**/tenants-changelog.xml";
 
@@ -38,8 +38,8 @@ public class MigrationPathsProvider implements IMigrationPathProvider {
     }
 
     @Override
-    public List<URI> defaultSchemaMigrationsPaths() {
-        return migrationPaths(DEFAULT_SCHEMA_CHANGELOG);
+    public List<URI> defaultMigrationsPaths() {
+        return migrationPaths(DEFAULT_CHANGELOG);
     }
 
     private List<URI> migrationPaths(String pattern) {
@@ -83,10 +83,7 @@ public class MigrationPathsProvider implements IMigrationPathProvider {
         }
 
         private int compareRegardingTestMigrations(String migrationPath1, String migrationPath2) {
-            if (migrationPath1.contains(TEST_MIGRATION_PATH)
-                    && migrationPath2.contains(TEST_MIGRATION_PATH)) {
-                return 0;
-            } else if (!migrationPath1.contains(TEST_MIGRATION_PATH)
+             if (!migrationPath1.contains(TEST_MIGRATION_PATH)
                     && migrationPath2.contains(TEST_MIGRATION_PATH)) {
                 return -1;
             } else if (migrationPath1.contains(TEST_MIGRATION_PATH)

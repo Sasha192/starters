@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.SchemaTenant;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.SchemaTenantRepository;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantReadRepository;
 import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationsService;
 
 import javax.validation.constraints.NotNull;
@@ -18,12 +18,12 @@ public class CustomMultitenantSpringLiquibaseOnStartup implements InitializingBe
 
     private static final Logger logger = LoggerFactory.getLogger(CustomMultitenantSpringLiquibaseOnStartup.class);
 
-    private final SchemaTenantRepository schemaTenantRepository;
+    private final SchemaTenantReadRepository schemaTenantRepository;
     private final boolean runLiquibaseForTenants;
     private final IMigrationsService<SchemaTenant> migrationsService;
     private final String defaultSchema;
 
-    public CustomMultitenantSpringLiquibaseOnStartup(SchemaTenantRepository tenantRepository,
+    public CustomMultitenantSpringLiquibaseOnStartup(SchemaTenantReadRepository tenantRepository,
                                                      IMigrationsService<SchemaTenant> migrationsService,
                                                      StarterConfigurationProperties starterProperties,
                                                      boolean runLiquibaseForTenants) {
@@ -42,6 +42,8 @@ public class CustomMultitenantSpringLiquibaseOnStartup implements InitializingBe
             runOnTenants(tenants);
         }
     }
+
+
 
 
     private List<SchemaTenant> getAllTenantsExceptDefaultSchema(@NotNull String defaultSchema) {

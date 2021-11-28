@@ -13,10 +13,10 @@ import java.util.Objects;
 @Component
 public class EnableFilterAspect {
 
-    @AfterReturning(pointcut="bean(entityManagerFactory) && execution(* createEntityManager(..))", returning="retVal")
-    public void getSessionAfter(Object retVal) {
-        if (retVal instanceof EntityManager) {
-            Session session = ((EntityManager) retVal).unwrap(Session.class);
+    @AfterReturning(pointcut="bean(entityManagerFactory) && execution(* createEntityManager(..))", returning="returningValue")
+    public void getSessionAfter(Object returningValue) {
+        if (returningValue instanceof EntityManager) {
+            Session session = ((EntityManager) returningValue).unwrap(Session.class);
             session.enableFilter("tenantFilter")
                     .setParameter(
                             "tenantId",

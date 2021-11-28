@@ -1,8 +1,7 @@
-package org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud;
+package org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant;
 
 import org.wpstarters.commonwebstarter.Tenant;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -15,11 +14,9 @@ import java.util.UUID;
 public class SchemaTenant implements Tenant<UUID> {
 
     @Id
-    @Column(name = "id")
     private UUID id;
 
     @Size(max = 32)
-    @Column(name = "schema")
     private String schema;
 
     private boolean active;

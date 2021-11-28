@@ -7,20 +7,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.wpstarters.commonwebstarter.Tenant;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.TenantManagementService;
-
-import java.util.UUID;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.ITenantManagementService;
 
 @Controller
 @RequestMapping("/tenants-controller/")
 public class TenantController {
 
     @Autowired
-    private TenantManagementService tenantManagementService;
+    private ITenantManagementService<?> schemaTenantManagementService;
 
     @PostMapping("/create")
-    public ResponseEntity<? extends Tenant<UUID>> createTenant() {
-        Tenant<UUID> tenant = this.tenantManagementService.createTenant();
+    public ResponseEntity<? extends Tenant<?>> createTenant() {
+        Tenant<?> tenant = this.schemaTenantManagementService.createTenant();
         return new ResponseEntity<>(tenant, HttpStatus.OK);
     }
 }

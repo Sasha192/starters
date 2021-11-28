@@ -8,8 +8,8 @@ import org.hibernate.service.UnknownUnwrapTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.SchemaTenant;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.SchemaTenantRepository;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantReadRepository;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -24,13 +24,13 @@ public class CustomMultiTenantConnectionProvider implements MultiTenantConnectio
     private static final Logger logger = LoggerFactory.getLogger(CustomMultiTenantConnectionProvider.class);
 
     private final DataSource datasource;
-    private final SchemaTenantRepository tenantRepository;
+    private final SchemaTenantReadRepository tenantRepository;
     private final StarterConfigurationProperties.CacheConfigurationProperties cacheProperties;
 
     private LoadingCache<String, String> tenantSchemas;
 
     public CustomMultiTenantConnectionProvider(DataSource datasource,
-                                               SchemaTenantRepository tenantRepository,
+                                               SchemaTenantReadRepository tenantRepository,
                                                StarterConfigurationProperties.CacheConfigurationProperties cacheProperties) {
         this.datasource = datasource;
         this.tenantRepository = tenantRepository;
