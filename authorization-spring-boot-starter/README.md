@@ -1,3 +1,5 @@
-# oidc-authentication-spring-boot-service
+# authorization-spring-boot-starter
+
+Deprecated
 
 
