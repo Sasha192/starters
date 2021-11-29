@@ -24,11 +24,11 @@ import java.util.Map;
 @Configuration
 @Conditional(SchemaPerTenant.class)
 @EnableJpaRepositories(
-        basePackages = { "org.wpstarters.multitenancyspringbootstarter.multitenancy.domain" },
+        basePackages = {"org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud"},
         entityManagerFactoryRef = "defaultEntityManagerFactory",
         transactionManagerRef = "defaultTransactionManager"
 )
-public class DefaultPersistenceConfig {
+public class DefaultSchemaPerCompanyPersistenceConfig {
 
     private final ConfigurableListableBeanFactory beanFactory;
     private final JpaProperties jpaProperties;
@@ -36,9 +36,9 @@ public class DefaultPersistenceConfig {
     private final String defaultSchema;
 
 
-    public DefaultPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
-                                    JpaProperties jpaProperties,
-                                    StarterConfigurationProperties configurationProperties) {
+    public DefaultSchemaPerCompanyPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
+                                                    JpaProperties jpaProperties,
+                                                    StarterConfigurationProperties configurationProperties) {
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
         this.entityPackages = configurationProperties.getDefaultScan();

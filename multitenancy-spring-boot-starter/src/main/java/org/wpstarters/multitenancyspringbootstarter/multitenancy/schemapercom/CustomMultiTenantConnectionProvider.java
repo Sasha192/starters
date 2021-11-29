@@ -7,9 +7,9 @@ import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.hibernate.service.UnknownUnwrapTypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wpstarters.multitenancyspringbootstarter.Tenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.domain.SimpleTenantRepository;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantReadRepository;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -24,13 +24,13 @@ public class CustomMultiTenantConnectionProvider implements MultiTenantConnectio
     private static final Logger logger = LoggerFactory.getLogger(CustomMultiTenantConnectionProvider.class);
 
     private final DataSource datasource;
-    private final SimpleTenantRepository tenantRepository;
+    private final SchemaTenantReadRepository tenantRepository;
     private final StarterConfigurationProperties.CacheConfigurationProperties cacheProperties;
 
     private LoadingCache<String, String> tenantSchemas;
 
     public CustomMultiTenantConnectionProvider(DataSource datasource,
-                                               SimpleTenantRepository tenantRepository,
+                                               SchemaTenantReadRepository tenantRepository,
                                                StarterConfigurationProperties.CacheConfigurationProperties cacheProperties) {
         this.datasource = datasource;
         this.tenantRepository = tenantRepository;
@@ -46,7 +46,7 @@ public class CustomMultiTenantConnectionProvider implements MultiTenantConnectio
                 .build(new CacheLoader<>() {
                     public String load(String key) {
                         UUID id = UUID.fromString(key);
-                        Tenant<UUID> tenant = tenantRepository.findById(id)
+                        SchemaTenant tenant = tenantRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("No such tenant: " + key));
                         return tenant.getSchema();
                     }
