@@ -18,7 +18,7 @@ public class MigrationPathsProvider implements IMigrationPathProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MigrationPathsProvider.class);
 
-    private static final String DEFAULT_CHANGELOG = "classpath*:**/default-changelog.xml";
+    private static final String DEFAULT_CHANGELOG = "classpath*:**/default_schema-changelog.xml";
 
     protected static final String TENANTS_CHANGELOG = "classpath*:**/tenants-changelog.xml";
 

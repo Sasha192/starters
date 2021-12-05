@@ -1,5 +1,6 @@
 package org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom;
 
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,11 +48,21 @@ public class CustomMultitenantSpringLiquibaseOnStartup implements InitializingBe
 
 
     private List<SchemaTenant> getAllTenantsExceptDefaultSchema(@NotNull String defaultSchema) {
-        Iterable<SchemaTenant> tenants = schemaTenantRepository.findAll();
+        Iterable<SchemaTenant> tenants = List.of();
+
+        try {
+
+            tenants = schemaTenantRepository.findAll();
+
+        } catch (Exception exception) {
+
+            logger.info("Can not retrieve tenants");
+
+        }
 
         return StreamSupport.stream(tenants.spliterator(), false)
-                .filter(tenant -> !defaultSchema.equals(tenant.getSchema()))
-                .collect(Collectors.toList());
+              .filter(tenant -> !defaultSchema.equals(tenant.getSchema()))
+              .collect(Collectors.toList());
     }
 
     private void runOnTenants(Iterable<SchemaTenant> tenants)

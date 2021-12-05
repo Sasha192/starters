@@ -17,7 +17,7 @@ public class SchemaTenantMigrationsService extends BaseMigrationsService<SchemaT
 
     private static final Logger logger = LoggerFactory.getLogger(SchemaTenantMigrationsService.class);
     private static final String CREATE_SCHEMA = "CREATE SCHEMA %s";
-    private static final String DROP_SCHEMA_IF_EXIST = "DROP SCHEMA IF EXISTS %s";
+    private static final String DROP_SCHEMA_IF_EXIST = "DROP SCHEMA IF EXISTS %s CASCADE";
 
     public SchemaTenantMigrationsService(JdbcTemplate jdbcTemplate,
                                          LiquibaseProperties tenantProperties,

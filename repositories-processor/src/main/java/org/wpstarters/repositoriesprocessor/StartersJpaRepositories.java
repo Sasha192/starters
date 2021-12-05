@@ -8,6 +8,6 @@ import static java.lang.annotation.ElementType.TYPE;
 
 @Retention(value = RetentionPolicy.CLASS)
 @Target(value = { TYPE })
-public @interface DefaultJpaRepositories {
+public @interface StartersJpaRepositories {
 
 }

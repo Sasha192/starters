@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -23,11 +25,6 @@ import java.util.Map;
 
 @Configuration
 @Conditional(SchemaPerTenant.class)
-@EnableJpaRepositories(
-        basePackages = {"org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud"},
-        entityManagerFactoryRef = "defaultEntityManagerFactory",
-        transactionManagerRef = "defaultTransactionManager"
-)
 public class DefaultSchemaPerCompanyPersistenceConfig {
 
     private final ConfigurableListableBeanFactory beanFactory;
@@ -45,8 +42,8 @@ public class DefaultSchemaPerCompanyPersistenceConfig {
         this.defaultSchema = configurationProperties.getDefaultSchema();
     }
 
-    @Bean(value = "defaultEntityManagerFactory") // do not change!!!
-    // @see org.37wp-starters.repositories-processor
+    @Bean(value = "defaultEntityManagerFactory")
+    @Primary
     public LocalContainerEntityManagerFactoryBean defaultEntityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
@@ -67,8 +64,8 @@ public class DefaultSchemaPerCompanyPersistenceConfig {
         return em;
     }
 
-    @Bean(value = "defaultTransactionManager") // do not change!!!
-    // @see org.37wp-starters.repositories-processor
+    @Bean(value = "defaultTransactionManager")
+    @Primary
     public JpaTransactionManager defaultTransactionManager(@Qualifier("defaultEntityManagerFactory") EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);

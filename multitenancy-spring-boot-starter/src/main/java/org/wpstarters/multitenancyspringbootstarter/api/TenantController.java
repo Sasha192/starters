@@ -14,7 +14,7 @@ import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.ITen
 public class TenantController {
 
     @Autowired
-    private ITenantManagementService<?> schemaTenantManagementService;
+    private ITenantManagementService<?, ? extends Tenant<?>> schemaTenantManagementService;
 
     @PostMapping("/create")
     public ResponseEntity<? extends Tenant<?>> createTenant() {

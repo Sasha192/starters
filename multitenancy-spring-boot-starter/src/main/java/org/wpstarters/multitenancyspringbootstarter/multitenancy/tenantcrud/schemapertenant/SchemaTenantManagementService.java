@@ -12,7 +12,7 @@ import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.ITen
 import javax.annotation.CheckReturnValue;
 import java.util.UUID;
 
-public class SchemaTenantManagementService implements ITenantManagementService<UUID> {
+public class SchemaTenantManagementService implements ITenantManagementService<UUID, SchemaTenant> {
 
     private static final Logger logger = LoggerFactory.getLogger(SchemaTenantManagementService.class);
 
@@ -34,7 +34,7 @@ public class SchemaTenantManagementService implements ITenantManagementService<U
 
         SchemaTenant tenant = new SchemaTenant.Builder()
                 .id(UUID.randomUUID())
-                .schema(generateSchema())
+                .schema("schema_" + generateSchema())
                 .active(true)
                 .build();
 
@@ -63,14 +63,23 @@ public class SchemaTenantManagementService implements ITenantManagementService<U
         return new SchemaTenant();
     }
 
+    @Override
+    public Tenant<UUID> removeTenant(SchemaTenant tenant) {
+
+        migrationsService.deleteSchema(tenant.getSchema());
+        tenantRepository.deleteById(tenant.getId());
+        return tenant;
+
+    }
+
     private String generateSchema() {
 
         String schema = UUID.randomUUID().toString().replace("-","");
         int schemaLength = schema.length();
         if ((System.nanoTime() & 1L) == 0L) {
-            schema = schema.substring(0, schemaLength);
+            schema = schema.substring(0, schemaLength / 2);
         } else {
-            schema = schema.substring(schemaLength);
+            schema = schema.substring(schemaLength / 2);
         }
 
         return schema;

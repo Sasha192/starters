@@ -8,14 +8,9 @@ wp37-multitenancy-starter:
     expiration: 30
     timeUnit: MINUTES
   defaultScan:
-    repositoryPackages: org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
-    entityPackages:
-      - org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
-  tenantScan:
-    repositoryPackages: org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
     entityPackages:
       - org.wpstarters.multitenancyspringbootstarter.multitenancy.domain
   default-liquibase:
-    changeLog: classpath:migrations-default/default_schema-changelog.xml
+    database-change-log-table: default-database-change-log
   multitenancy-liquibase:
-    changeLog: classpath:migrations-tenant/tenants-changelog.xml
+    database-change-log-table: tenancy-database-change-log

@@ -42,7 +42,7 @@ public class DefaultJpaRepositoriesProcessor extends AbstractProcessor {
 
 	@Override
 	public Set<String> getSupportedAnnotationTypes() {
-		return Set.of(DefaultJpaRepositories.class.getCanonicalName());
+		return Set.of(StartersJpaRepositories.class.getCanonicalName());
 	}
 
 	@Override
@@ -52,8 +52,14 @@ public class DefaultJpaRepositoriesProcessor extends AbstractProcessor {
 
 	@Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+
+	    // retrieving active application properties
+
         Map<String, Object> applicationProperties = loadApplicationProperties();
-        Set<? extends Element> elements =  roundEnv.getElementsAnnotatedWith(DefaultJpaRepositories.class);
+
+        //
+
+        Set<? extends Element> elements =  roundEnv.getElementsAnnotatedWith(StartersJpaRepositories.class);
 		if (elements.isEmpty()) {
         	return false;
 		} else if (elements.size() != 1) {
@@ -62,9 +68,9 @@ public class DefaultJpaRepositoriesProcessor extends AbstractProcessor {
             );
         }
 
-        Element annotatedElement = elements.stream().findAny().get();
+		Element annotatedElement = elements.stream().findAny().get();
 		PackageElement packageElement = elementUtils.getPackageOf(annotatedElement);
-
+		
 
 
 
