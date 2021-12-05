@@ -9,7 +9,7 @@ import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.sche
 import javax.annotation.CheckReturnValue;
 import java.util.UUID;
 
-public class SharedSchemaTenantManagementService implements ITenantManagementService<UUID> {
+public class SharedSchemaTenantManagementService implements ITenantManagementService<UUID,SharedSchemaTenant> {
 
     private static final Logger logger = LoggerFactory.getLogger(SharedSchemaTenantManagementService.class);
 
@@ -42,4 +42,12 @@ public class SharedSchemaTenantManagementService implements ITenantManagementSer
         return new SchemaTenant();
     }
 
+    @Override
+    public Tenant<UUID> removeTenant(SharedSchemaTenant tenant) {
+
+        tenantRepository.deleteById(tenant.getId());
+        logger.info("Tenant was removed: {}", tenant);
+        return tenant;
+
+    }
 }

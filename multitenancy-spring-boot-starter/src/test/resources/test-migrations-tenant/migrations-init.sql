@@ -1,9 +1,9 @@
 --liquibase formatted sql
 
 --changeset buol:migrations-init splitStatements:false logicalFilePath:classpath:/migrations-tenant/migrations-init.sql
-create table test
+create table tenant_test_table
 (
-    id uuid not null
+    id uuid not null PRIMARY KEY,
+    name varchar not null
 );
-
 

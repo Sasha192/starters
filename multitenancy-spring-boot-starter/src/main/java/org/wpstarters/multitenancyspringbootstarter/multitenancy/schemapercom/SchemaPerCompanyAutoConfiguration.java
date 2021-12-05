@@ -13,8 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.wpstarters.commonwebstarter.ITenantIDResolver;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.SchemaPerTenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantManagementService;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantReadRepository;
 import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationPathProvider;
@@ -22,6 +24,7 @@ import org.wpstarters.multitenancyspringbootstarter.migrations.MigrationPathsPro
 import org.wpstarters.multitenancyspringbootstarter.migrations.SchemaTenantMigrationsService;
 
 import javax.sql.DataSource;
+import java.util.UUID;
 
 @Configuration
 @Conditional(SchemaPerTenant.class)
@@ -33,8 +36,8 @@ public class SchemaPerCompanyAutoConfiguration {
 
 
     @Bean(value = "tenantIdentifierResolver")
-    public CurrentTenantIdentifierResolver tenantIdentifierResolver() {
-        return new CustomCurrentTenantIdentifierResolver();
+    public CurrentTenantIdentifierResolver tenantIdentifierResolver(StarterConfigurationProperties starterConfigurationProperties) {
+        return new CustomCurrentTenantIdentifierResolver(starterConfigurationProperties);
     }
 
     @Bean("tenantConnectionProvider")
@@ -91,6 +94,11 @@ public class SchemaPerCompanyAutoConfiguration {
     public SchemaTenantManagementService schemaTenantManagementService(SchemaTenantReadRepository tenantRepository,
                                                                        SchemaTenantMigrationsService migrationsService) {
         return new SchemaTenantManagementService(tenantRepository, migrationsService);
+    }
+
+    @Bean
+    public ITenantIDResolver<SchemaTenant> schemaTenantITenantIDResolver() {
+        return schema -> schema;
     }
 
 }
