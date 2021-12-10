@@ -18,6 +18,7 @@ import org.wpstarters.multitenancyspringbootstarter.multitenancy.SharedSchema;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.schemapercom.CustomLiquibaseProperties;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.shared.SharedSchemaTenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.shared.SharedSchemaTenantManagementService;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.shared.SharedSchemaTenantReadRepository;
 
@@ -31,14 +32,8 @@ import javax.sql.DataSource;
 public class SharedSchemaAutoConfiguration {
 
     @Bean
-    public ITenantIDResolver<SchemaTenant> sharedTenantIdResolver() {
+    public ITenantIDResolver<SharedSchemaTenant> sharedTenantIdResolver() {
         return tenantId -> tenantId;
-    }
-
-    @Bean("defaultLiquibaseProperties")
-    @ConfigurationProperties(prefix = "wp37-multitenancy-starter.default-liquibase")
-    public CustomLiquibaseProperties defaultLiquibaseProperties() {
-        return new CustomLiquibaseProperties();
     }
 
     @Bean

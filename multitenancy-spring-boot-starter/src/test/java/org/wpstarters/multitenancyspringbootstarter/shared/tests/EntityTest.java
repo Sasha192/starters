@@ -13,7 +13,8 @@ import org.wpstarters.multitenancyspringbootstarter.shared.BaseSharedIntegration
 import org.wpstarters.multitenancyspringbootstarter.shared.domain.TenantTestEntity;
 import org.wpstarters.multitenancyspringbootstarter.shared.domain.TenantSharedTestEntityRepository;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -31,36 +32,42 @@ public class EntityTest extends BaseSharedIntegrationTestClass {
     @Autowired
     TenantSharedTestEntityRepository testEntityRepository;
 
-    ThreadLocal<SharedSchemaTenant> schemaTenantThreadLocal = new ThreadLocal<>();
+    SharedSchemaTenant tenant1;
+    SharedSchemaTenant tenant2;
 
     @BeforeEach
     public void init() {
 
-        SharedSchemaTenant newTenant = (SharedSchemaTenant) tenantManagementService.createTenant();
-        schemaTenantThreadLocal.set(newTenant);
+        tenant1 = (SharedSchemaTenant) tenantManagementService.createTenant();
+        tenant2 = (SharedSchemaTenant) tenantManagementService.createTenant();
 
     }
 
     @Test
     public void testCreateUpdateDeleteRead() {
 
-        TenantTestEntity testEntity = new TenantTestEntity.Builder()
-                .id(UUID.randomUUID())
-                .name("Name")
-                .build();
+        saveOneEntityForEachTenant();
 
-        TenantContext.setTenantContext(schemaTenantThreadLocal.get().getId().toString());
-        testEntity = testEntityRepository.save(testEntity);
+        TenantContext.setTenantContext(tenant1.getId().toString());
+        List<TenantTestEntity> tenantTestEntityList = new ArrayList<>();
+        testEntityRepository.findAll().forEach(tenantTestEntityList::add);
 
-        Optional<TenantTestEntity> tenantTestEntityOptional = testEntityRepository.findById(testEntity.getId());
-        Assertions.assertThat(tenantTestEntityOptional.get().getName()).isEqualTo("Name");
-        Assertions.assertThat(tenantTestEntityOptional.get().getTenantId()).isEqualTo(schemaTenantThreadLocal.get().getId().toString());
-        testEntity.setName("Another name");
-        testEntityRepository.save(testEntity);
-        testEntityRepository.deleteById(testEntity.getId());
+        Assertions.assertThat(tenantTestEntityList.size()).isEqualTo(1);
+        Assertions.assertThat(tenantTestEntityList.get(0).getTenantId()).isEqualTo(tenant1.getId().toString());
 
+    }
 
-        Assertions.assertThat(testEntityRepository.findById(testEntity.getId()).isEmpty()).isTrue();
+    private void saveOneEntityForEachTenant() {
+
+        for (SharedSchemaTenant tenant: List.of(tenant1, tenant2)) {
+            TenantContext.setTenantContext(tenant.getId().toString());
+            TenantTestEntity entityTenant1 = new TenantTestEntity.Builder()
+                    .id(UUID.randomUUID())
+                    .name("Name")
+                    .build();
+            testEntityRepository.save(entityTenant1);
+        }
+
 
     }
 
@@ -71,6 +78,9 @@ public class EntityTest extends BaseSharedIntegrationTestClass {
 
     @Override
     protected void beforeCleanup() {
-        // do nothing
+
+        jdbcTemplate.update("DELETE FROM test_entity_table");
+        jdbcTemplate.update("DELETE FROM tenants");
+
     }
 }
