@@ -1,13 +1,15 @@
-package org.wpstarters.multitenancyspringbootstarter.schematests;
+package org.wpstarters.multitenancyspringbootstarter.schema.tests;
 
 import org.assertj.core.api.Assertions;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.wpstarters.commonwebstarter.TenantContext;
-import org.wpstarters.multitenancyspringbootstarter.BaseSchemaIntegrationTestClass;
-import org.wpstarters.multitenancyspringbootstarter.domain.TenantTestEntity;
-import org.wpstarters.multitenancyspringbootstarter.domain.TenantTestEntityRepository;
+import org.wpstarters.multitenancyspringbootstarter.schema.BaseSchemaIntegrationTestClass;
+import org.wpstarters.multitenancyspringbootstarter.schema.domain.TenantTestEntity;
+import org.wpstarters.multitenancyspringbootstarter.schema.domain.TenantSchemaTestEntityRepository;
 import org.wpstarters.multitenancyspringbootstarter.migrations.SchemaTenantMigrationsService;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.ITenantManagementService;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
@@ -33,7 +35,7 @@ public class EntityTest extends BaseSchemaIntegrationTestClass {
     MultiTenantConnectionProvider provider;
 
     @Autowired
-    TenantTestEntityRepository testEntityRepository;
+    TenantSchemaTestEntityRepository testEntityRepository;
 
     ThreadLocal<SchemaTenant> schemaTenantThreadLocal = new ThreadLocal<>();
 
@@ -86,5 +88,13 @@ public class EntityTest extends BaseSchemaIntegrationTestClass {
         schemaTenantMigrationsService.deleteSchema(schemaTenantThreadLocal.get().getSchema());
     }
 
+    @Override
+    protected void afterCleanup() {
+        // do nothing
+    }
 
+    @Override
+    protected void beforeCleanup() {
+        // do nothing
+    }
 }
