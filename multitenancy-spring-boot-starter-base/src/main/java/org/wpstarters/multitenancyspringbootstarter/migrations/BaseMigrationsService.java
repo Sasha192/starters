@@ -10,7 +10,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.wpstarters.commonwebstarter.Tenant;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
 
 import javax.sql.DataSource;
 import java.net.URI;
@@ -48,20 +47,12 @@ public abstract class BaseMigrationsService<T extends Tenant<?>> implements IMig
     @Override
     public void runMigrationsOnDefaultTenant()
             throws LiquibaseException {
-        SchemaTenant defaultTenant = new SchemaTenant.Builder()
-                .schema(starterProperties.getDefaultSchema())
-                .active(true)
-                .build();
+        Tenant<?> defaultTenant = getDefaultTenant();
         List<URI> defaultSchemaMigrationsUris = migrationPathProvider.defaultMigrationsPaths();
         runMigrations(defaultTenant, defaultProperties, defaultSchemaMigrationsUris);
     }
 
-    @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
-
-    protected void runMigrations(SchemaTenant tenant,
+    protected void runMigrations(Tenant<?> tenant,
                                LiquibaseProperties liquibaseProperties,
                                List<URI> migrationsUris) throws LiquibaseException {
         logger.debug("RUNNING MIGRATIONS on {} tenant", tenant);
@@ -73,6 +64,13 @@ public abstract class BaseMigrationsService<T extends Tenant<?>> implements IMig
             logger.debug("FINISHED MIGRATION {} on {} tenant", migrationPath, tenant);
         }
     }
+
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    protected abstract Tenant<?> getDefaultTenant();
 
 
     ///
