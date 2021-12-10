@@ -32,10 +32,7 @@ import java.util.function.Predicate;
 @Conditional(SchemaPerTenant.class)
 @Import(value = {
         DefaultSchemaPerCompanyPersistenceConfig.class,
-        TenancyPersistenceConfig.class,
-        StarterConfigurationProperties.class,
-        DataSource.class,
-        SchemaTenantReadRepository.class,
+        TenancyPersistenceConfig.class
 })
 @SpringBootApplication
 public class SchemaPerTenantAutoConfiguration {
