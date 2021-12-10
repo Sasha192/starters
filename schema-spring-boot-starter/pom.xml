@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>schema-spring-boot-starter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>multitenancy-spring-boot-starter</name>
+	<name>schema-spring-boot-starter</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>15</java.version>
