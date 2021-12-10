@@ -15,7 +15,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
                 "org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.shared",
                 "org.wpstarters.multitenancyspringbootstarter.shared.domain"},
         entityManagerFactoryRef = "defaultEntityManagerFactory",
-        transactionManagerRef = "defaultTransactionManager",
+        transactionManagerRef = "defaultTransactionManager"/*,
         includeFilters = {
                 @ComponentScan.Filter(
                         type = ASSIGNABLE_TYPE,
@@ -23,7 +23,7 @@ import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
                                 BasicTenantAwareEntity.class
                         }
                 )
-        }
+        }*/
 )
 @Conditional(SharedSchema.class)
 public class DefaultSharedJpaRepositoriesConfig {

@@ -13,8 +13,6 @@ import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.shar
 @Import(value = {
         MultitenancyStarterConfiguration.class,
         SharedSchemaAutoConfiguration.class,
-        DefaultSharedJpaRepositoriesConfig.class,
-        SharedSchemaTenantReadRepository.class,
         YamlEnvironmentBeanProcessor.class
 })
 @Conditional(SharedSchema.class)

@@ -4,7 +4,7 @@
 create table tenants
 (
     id uuid not null PRIMARY KEY,
-    schema text not null,
+    schema text,
     active bool default false not null
 );
 
