@@ -37,7 +37,7 @@ public class EntityTest extends BaseSchemaIntegrationTestClass {
     @Autowired
     TenantSchemaTestEntityRepository testEntityRepository;
 
-    ThreadLocal<SchemaTenant> schemaTenantThreadLocal = new ThreadLocal<>();
+    SchemaTenant schemaTenant;
 
     @BeforeEach
     public void init() throws Exception {
@@ -45,7 +45,7 @@ public class EntityTest extends BaseSchemaIntegrationTestClass {
         String checkSchema = " SELECT table_name FROM information_schema.tables WHERE table_schema = '%s' ";
 
         SchemaTenant newTenant = (SchemaTenant) tenantManagementService.createTenant();
-        schemaTenantThreadLocal.set(newTenant);
+        schemaTenant = newTenant;
 
         try (Connection con = provider.getAnyConnection()) {
 
@@ -71,7 +71,7 @@ public class EntityTest extends BaseSchemaIntegrationTestClass {
                 .name("Name")
                 .build();
 
-        TenantContext.setTenantContext(schemaTenantThreadLocal.get().getId().toString());
+        TenantContext.setTenantContext(schemaTenant.getId().toString());
         testEntity = testEntityRepository.save(testEntity);
         Assertions.assertThat(testEntityRepository.findById(testEntity.getId()).get().getName()).isEqualTo("Name");
         testEntity.setName("Another name");
@@ -85,7 +85,7 @@ public class EntityTest extends BaseSchemaIntegrationTestClass {
 
     @AfterEach
     public void after() {
-        schemaTenantMigrationsService.deleteSchema(schemaTenantThreadLocal.get().getSchema());
+        schemaTenantMigrationsService.deleteSchema(schemaTenant.getSchema());
     }
 
     @Override
