@@ -1,6 +1,7 @@
-package org.wpstarters.multitenancyspringbootstarter;
+package org.wpstarters.multitenancyspringbootstarter.schema;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantManagementService;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenantReadRepository;
 
 @SpringJUnitWebConfig
 @SpringBootTest(classes = {SchemaTestConfiguration.class}, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -25,6 +29,12 @@ public abstract class BaseSchemaIntegrationTestClass {
 
 	@Autowired
 	protected WebApplicationContext webApplicationContext;
+	
+	@Autowired
+	private SchemaTenantManagementService tenantManagementService;
+	
+	@Autowired
+	private SchemaTenantReadRepository tenantReadRepository;
 
 	@BeforeEach
 	public void setUp() throws Exception {
@@ -37,5 +47,27 @@ public abstract class BaseSchemaIntegrationTestClass {
 	}
 
 	public abstract void init() throws Exception;
+	
+	@AfterEach
+	public void cleanup() {
+		
+		beforeCleanup();
+
+		Iterable<SchemaTenant> schemaTenants = tenantReadRepository.findAll();
+		
+		
+		for (SchemaTenant tenant: schemaTenants) {
+			
+			tenantManagementService.removeTenant(tenant);
+			
+		}
+		
+		afterCleanup();
+		
+	}
+
+	protected abstract void afterCleanup();
+
+	protected abstract void beforeCleanup();
 
 }

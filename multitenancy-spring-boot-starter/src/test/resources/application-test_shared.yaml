@@ -1,8 +1,8 @@
 wp37-multitenancy-starter:
   enabled: true
-  multitenancy: SCHEMA_PER_TENANT
+  multitenancy: SHARED_SCHEMA
   defaultSchema: public
-  runLiquibaseForTenants: true
+  runLiquibaseForTenants: false
   cache:
     maxSize: 20
     expiration: 30
@@ -10,13 +10,9 @@ wp37-multitenancy-starter:
   defaultScan:
     entityPackages:
       - org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud
-  tenantScan:
-    entityPackages:
-      - org.wpstarters.multitenancyspringbootstarter.schema.domain
+      - org.wpstarters.multitenancyspringbootstarter.shared.domain
   default-liquibase:
     database-change-log-table: default-database-change-log
-  multitenancy-liquibase:
-    database-change-log-table: tenancy-database-change-log
 
 spring:
   liquibase:
@@ -34,3 +30,7 @@ spring:
       ddl-auto: none
   jackson:
     default-property-inclusion: non_null
+
+logging:
+  level:
+    root: DEBUG

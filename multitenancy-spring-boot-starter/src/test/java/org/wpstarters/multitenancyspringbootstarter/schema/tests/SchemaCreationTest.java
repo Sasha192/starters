@@ -1,10 +1,10 @@
-package org.wpstarters.multitenancyspringbootstarter.schematests;
+package org.wpstarters.multitenancyspringbootstarter.schema.tests;
 
 import org.assertj.core.api.Assertions;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.wpstarters.multitenancyspringbootstarter.BaseSchemaIntegrationTestClass;
+import org.wpstarters.multitenancyspringbootstarter.schema.BaseSchemaIntegrationTestClass;
 import org.wpstarters.multitenancyspringbootstarter.migrations.SchemaTenantMigrationsService;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.ITenantManagementService;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant.SchemaTenant;
@@ -63,5 +63,13 @@ public class SchemaCreationTest extends BaseSchemaIntegrationTestClass {
 
     }
 
+    @Override
+    protected void afterCleanup() {
+        // do nothing
+    }
 
+    @Override
+    protected void beforeCleanup() {
+        // do nothing
+    }
 }

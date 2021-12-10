@@ -1,5 +1,7 @@
 package org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.schemapertenant;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.wpstarters.commonwebstarter.Tenant;
 
 import javax.persistence.Entity;
@@ -87,5 +89,21 @@ public class SchemaTenant implements Tenant<UUID> {
                 .add("schema='" + schema + "'")
                 .add("active=" + active)
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SchemaTenant that = (SchemaTenant) o;
+
+        return new EqualsBuilder().append(isActive(), that.isActive()).append(getId(), that.getId()).append(getSchema(), that.getSchema()).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(getId()).append(getSchema()).append(isActive()).toHashCode();
     }
 }

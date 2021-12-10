@@ -20,15 +20,12 @@ import javax.sql.DataSource;
 @Configuration
 @Conditional(SharedSchema.class)
 @Import(value = {
-        StarterConfigurationProperties.class,
         DefaultSharedSchemaPersistenceConfig.class
 })
 public class SharedSchemaAutoConfiguration {
 
-    private final StarterConfigurationProperties starterProperties;
-
-    public SharedSchemaAutoConfiguration(StarterConfigurationProperties starterProperties) {
-        this.starterProperties = starterProperties;
+    public SharedSchemaAutoConfiguration() {
+        System.out.println();
     }
 
     @Bean

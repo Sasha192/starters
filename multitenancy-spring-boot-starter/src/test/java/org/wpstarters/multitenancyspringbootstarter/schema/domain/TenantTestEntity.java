@@ -1,4 +1,4 @@
-package org.wpstarters.multitenancyspringbootstarter.domain;
+package org.wpstarters.multitenancyspringbootstarter.schema.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
