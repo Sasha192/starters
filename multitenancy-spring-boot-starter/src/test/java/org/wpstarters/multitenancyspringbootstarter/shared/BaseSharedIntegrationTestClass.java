@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -32,6 +33,9 @@ public abstract class BaseSharedIntegrationTestClass {
 
 	@Autowired
 	protected WebApplicationContext webApplicationContext;
+
+	@Autowired
+	protected JdbcTemplate jdbcTemplate;
 	
 	@Autowired
 	private SharedSchemaTenantManagementService tenantManagementService;

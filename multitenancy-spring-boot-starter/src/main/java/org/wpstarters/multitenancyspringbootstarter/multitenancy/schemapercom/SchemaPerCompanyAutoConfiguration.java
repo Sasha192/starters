@@ -54,12 +54,6 @@ public class SchemaPerCompanyAutoConfiguration {
     }
 
 
-    @Bean("defaultLiquibaseProperties")
-    @ConfigurationProperties(prefix = "wp37-multitenancy-starter.default-liquibase")
-    public CustomLiquibaseProperties defaultLiquibaseProperties() {
-        return new CustomLiquibaseProperties();
-    }
-
     @Bean
     public IMigrationPathProvider migrationPathProvider() {
         return new MigrationPathsProvider(new PathMatchingResourcePatternResolver());

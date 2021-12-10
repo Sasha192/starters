@@ -1,5 +1,6 @@
 package org.wpstarters.multitenancyspringbootstarter.multitenancy.sharedschema;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.hibernate.Session;
@@ -13,18 +14,12 @@ import java.util.Objects;
 @Component
 public class EnableFilterAspect {
 
-    @AfterReturning(pointcut="bean(entityManagerFactory) && execution(* createEntityManager(..))", returning="returningValue")
-    public void getSessionAfter(Object returningValue) {
-        if (returningValue instanceof EntityManager) {
-            Session session = ((EntityManager) returningValue).unwrap(Session.class);
+    @AfterReturning(pointcut="bean(defaultEntityManagerFactory) && execution(* createEntityManager(..))", returning="retVal")
+    public void getSessionAfter(JoinPoint joinPoint, Object retVal) {
+        if (retVal instanceof EntityManager && Objects.nonNull(TenantContext.getTenantContext())) {
+            Session session = ((EntityManager) retVal).unwrap(Session.class);
             session.enableFilter("tenantFilter")
-                    .setParameter(
-                            "tenantId",
-                            Objects.requireNonNull(
-                                    TenantContext.getTenantContext(),
-                                    "Tenant is not present for current session"
-                            )
-                    );
+                    .setParameter("tenantId",TenantContext.getTenantContext());
         }
     }
 
