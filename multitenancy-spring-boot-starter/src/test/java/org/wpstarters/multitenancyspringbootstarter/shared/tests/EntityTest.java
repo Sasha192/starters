@@ -13,6 +13,7 @@ import org.wpstarters.multitenancyspringbootstarter.shared.BaseSharedIntegration
 import org.wpstarters.multitenancyspringbootstarter.shared.domain.TenantTestEntity;
 import org.wpstarters.multitenancyspringbootstarter.shared.domain.TenantSharedTestEntityRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -33,7 +34,7 @@ public class EntityTest extends BaseSharedIntegrationTestClass {
     ThreadLocal<SharedSchemaTenant> schemaTenantThreadLocal = new ThreadLocal<>();
 
     @BeforeEach
-    public void init() throws Exception {
+    public void init() {
 
         SharedSchemaTenant newTenant = (SharedSchemaTenant) tenantManagementService.createTenant();
         schemaTenantThreadLocal.set(newTenant);
@@ -50,7 +51,10 @@ public class EntityTest extends BaseSharedIntegrationTestClass {
 
         TenantContext.setTenantContext(schemaTenantThreadLocal.get().getId().toString());
         testEntity = testEntityRepository.save(testEntity);
-        Assertions.assertThat(testEntityRepository.findById(testEntity.getId()).get().getName()).isEqualTo("Name");
+
+        Optional<TenantTestEntity> tenantTestEntityOptional = testEntityRepository.findById(testEntity.getId());
+        Assertions.assertThat(tenantTestEntityOptional.get().getName()).isEqualTo("Name");
+        Assertions.assertThat(tenantTestEntityOptional.get().getTenantId()).isEqualTo(schemaTenantThreadLocal.get().getId().toString());
         testEntity.setName("Another name");
         testEntityRepository.save(testEntity);
         testEntityRepository.deleteById(testEntity.getId());

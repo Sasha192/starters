@@ -39,7 +39,7 @@ public class SharedSchemaTenantManagementService implements ITenantManagementSer
 
         }
 
-        return new SchemaTenant();
+        return new SharedSchemaTenant();
     }
 
     @Override

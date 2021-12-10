@@ -4,6 +4,7 @@
 create table test_entity_table
 (
     id uuid not null PRIMARY KEY,
-    name varchar not null
+    name varchar not null,
+    tenant_id text not null
 );
 
