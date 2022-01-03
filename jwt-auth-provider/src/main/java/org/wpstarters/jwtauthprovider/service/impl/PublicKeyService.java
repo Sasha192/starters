@@ -1,7 +1,7 @@
 package org.wpstarters.jwtauthprovider.service.impl;
 
 import org.springframework.stereotype.Service;
-import org.wpstarters.jwtauthprovider.service.IKeyPairSupplier;
+import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
 import org.wpstarters.jwtauthprovider.service.IPublicKeyService;
 
 import javax.crypto.BadPaddingException;
@@ -29,7 +29,7 @@ public class PublicKeyService implements IPublicKeyService {
     private RSAPublicKey rsaPublicKey;
     private RSAPrivateKey rsaPrivateKey;
 
-    public PublicKeyService(IKeyPairSupplier keyPairSupplier)
+    public PublicKeyService(IEncryptionKeys keyPairSupplier)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
 
         rsaPublicKey = (RSAPublicKey) keyPairSupplier.keyPair().getPublic();

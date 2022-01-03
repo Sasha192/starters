@@ -2,7 +2,6 @@ package org.wpstarters.jwtauthprovider.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.wpstarters.jwtauthprovider.config.HttpContextHolder;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
@@ -23,12 +22,9 @@ public class CookieNonceStrategy implements INonceStrategy {
     private static final String COOKIE_NONCE = "COOKIE_NONCE";
 
     private final IEncryptionService encryptionService;
-    private final String domain;
 
-    public CookieNonceStrategy(IEncryptionService encryptionService,
-                               @Value("${application.domain}") String domain) {
+    public CookieNonceStrategy(IEncryptionService encryptionService) {
         this.encryptionService = encryptionService;
-        this.domain = domain;
     }
 
     @Override
@@ -47,8 +43,7 @@ public class CookieNonceStrategy implements INonceStrategy {
 
                 if (cookieNonce.getSecure() && cookieNonce.isHttpOnly()) {
                     String expectedNonce = encryptionService.encrypt(cookieNonce.getValue());
-                    String actualNonce = nonce;
-                    return expectedNonce.equals(actualNonce);
+                    return expectedNonce.equals(nonce); // actual nonce is 'nonce' variable
                 } else {
                     throw new ExtendedAuthenticationException("Invalid cookie: must be httpOnly and secured", ExceptionState.INVALID_NONCE);
                 }
@@ -63,18 +58,8 @@ public class CookieNonceStrategy implements INonceStrategy {
     public String generateNonce() {
         try {
             String nonce = UUID.randomUUID().toString().replaceAll("-", "");
-            if (HttpContextHolder.response.get() != null && HttpContextHolder.request.get() != null) {
-                Cookie cookieNonce = new Cookie(COOKIE_NONCE, nonce);
-                cookieNonce.setHttpOnly(true);
-                cookieNonce.setSecure(true);
-                cookieNonce.setMaxAge(60);
-                cookieNonce.setPath("/");
-                cookieNonce.setDomain(domain);
-
-                CookieUtils.addCookie(cookieNonce, true);
-            } else {
-                throw new ExtendedAuthenticationException("Request and Response are null", ExceptionState.INTERNAL_SERVER_ERROR);
-            }
+            Cookie cookieNonce = new Cookie(COOKIE_NONCE, nonce);
+            CookieUtils.addSecureCookie(cookieNonce, true);
             return encryptionService.encrypt(nonce);
         } catch (Exception e) {
             logger.error("Exception occurred while encrypting the nonce", e);

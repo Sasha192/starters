@@ -2,7 +2,7 @@ package org.wpstarters.jwtauthprovider.dto;
 
 import java.util.Map;
 
-public class SignUpRequest implements IAuthencationRequest {
+public class SignUpRequest implements IAuthenticationRequest {
 
     private String id;
     private ProviderType provider;

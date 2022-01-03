@@ -1,6 +1,6 @@
 package org.wpstarters.jwtauthprovider.dto;
 
-public class LoginRequest implements IAuthencationRequest {
+public class LoginRequest implements IAuthenticationRequest {
 
     private String id;
     private ProviderType provider;

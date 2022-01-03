@@ -24,10 +24,12 @@ public class RefreshToken {
     @Column(nullable = false)
     private long unixExpired;
 
+    @Column(nullable = false)
+    private String tokenId;
+
     @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     private RefreshTokenStatus status;
-
 
     public UUID getId() {
         return id;
@@ -49,11 +51,22 @@ public class RefreshToken {
         return status;
     }
 
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public boolean isValid() {
+
+        return status.equals(RefreshTokenStatus.VALID) && System.currentTimeMillis() <= getUnixExpired();
+
+    }
+
     public static final class Builder {
         private UUID id;
         private String username;
         private long unixCreated;
         private long unixExpired;
+        private String tokenId;
         private RefreshTokenStatus status = RefreshTokenStatus.VALID;
 
         public Builder() {
@@ -61,6 +74,11 @@ public class RefreshToken {
 
         public Builder id(UUID id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder tokenId(String tokenId) {
+            this.tokenId = tokenId;
             return this;
         }
 
@@ -91,6 +109,7 @@ public class RefreshToken {
             refreshToken.id = this.id;
             refreshToken.unixCreated = this.unixCreated;
             refreshToken.status = this.status;
+            refreshToken.tokenId = this.tokenId;
             return refreshToken;
         }
     }

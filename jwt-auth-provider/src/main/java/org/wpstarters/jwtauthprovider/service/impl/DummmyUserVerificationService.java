@@ -1,7 +1,7 @@
 package org.wpstarters.jwtauthprovider.service.impl;
 
 import org.springframework.stereotype.Service;
-import org.wpstarters.jwtauthprovider.dto.IAuthencationRequest;
+import org.wpstarters.jwtauthprovider.dto.IAuthenticationRequest;
 import org.wpstarters.jwtauthprovider.dto.ProviderType;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 import org.wpstarters.jwtauthprovider.service.IUserVerificationService;
@@ -14,12 +14,12 @@ public class DummmyUserVerificationService implements IUserVerificationService {
 
 
     @Override
-    public boolean sendVerificationForRequest(IAuthencationRequest authencationRequest) throws ExtendedAuthenticationException {
+    public boolean sendVerificationForRequest(IAuthenticationRequest authencationRequest) throws ExtendedAuthenticationException {
         return true;
     }
 
     @Override
-    public boolean verifyCodeForRequest(IAuthencationRequest authencationRequest) throws ExtendedAuthenticationException {
+    public boolean verifyCodeForRequest(IAuthenticationRequest authencationRequest) throws ExtendedAuthenticationException {
         return true;
     }
 

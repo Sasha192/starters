@@ -5,12 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.wpstarters.jwtauthprovider.api.AuthenticationRestController;
+import org.wpstarters.jwtauthprovider.api.state.StateMessage;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 import org.wpstarters.jwtauthprovider.service.impl.CustomUserDetailsService;
 
@@ -28,11 +27,13 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private static final String BEARER = "Bearer";
     private final ObjectMapper objectMapper;
 
-    private JwtUtils jwtUtils;
-    private CustomUserDetailsService userDetailsService;
+    private final TokenService tokenService;
+    private final CustomUserDetailsService userDetailsService;
 
-    public AuthenticationTokenFilter(JwtUtils jwtUtils, CustomUserDetailsService userDetailsService, ObjectMapper objectMapper) {
-        this.jwtUtils = jwtUtils;
+    public AuthenticationTokenFilter(TokenService tokenService,
+                                     CustomUserDetailsService userDetailsService,
+                                     ObjectMapper objectMapper) {
+        this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
         this.objectMapper = objectMapper;
     }
@@ -44,22 +45,24 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);
+            if (jwt != null && tokenService.validateJwtToken(jwt)) {
+                String username = tokenService.getUserNameFromJwtToken(jwt);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(new WebRequestDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                logger.debug("SecurityContext for user: " + username + " is set");
             }
 
             filterChain.doFilter(request, response);
 
         } catch (ExtendedAuthenticationException e) {
 
-            AuthenticationRestController.StateMessage stateMessage = new AuthenticationRestController.StateMessage(e.getMessage(), false, e.getExceptionState());
+            StateMessage stateMessage = new StateMessage(e.getMessage(), false, e.getExceptionState());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.getWriter().write(objectMapper.writeValueAsString(stateMessage));
 
@@ -80,4 +83,28 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         return !headerAuth.isBlank();
     }
 
+    public static class WebRequestDetails {
+
+        private final String remoteAddress;
+        private final int remotePort;
+        private final String remoteHost;
+
+        public WebRequestDetails(HttpServletRequest request) {
+            this.remoteAddress = request.getRemoteAddr();
+            this.remotePort = request.getRemotePort();
+            this.remoteHost = request.getRemoteHost();
+        }
+
+        public String getRemoteAddress() {
+            return remoteAddress;
+        }
+
+        public int getRemotePort() {
+            return remotePort;
+        }
+
+        public String getRemoteHost() {
+            return remoteHost;
+        }
+    }
 }
