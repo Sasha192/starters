@@ -1,6 +1,5 @@
-package org.wpstarters.jwtauthprovider.dto;
+package org.wpstarters.jwtauthprovider.model;
 
-import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

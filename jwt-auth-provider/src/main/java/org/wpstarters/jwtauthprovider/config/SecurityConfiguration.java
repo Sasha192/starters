@@ -14,9 +14,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.wpstarters.jwtauthprovider.config.entrypoint.AuthenticationEntryPointJwt;
+import org.wpstarters.jwtauthprovider.config.filters.AuthenticationTokenFilter;
+import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
 import org.wpstarters.jwtauthprovider.service.IRefreshTokenRepository;
+import org.wpstarters.jwtauthprovider.service.impl.TokenService;
 import org.wpstarters.jwtauthprovider.service.impl.CustomUserDetailsService;
 
 @Configuration
@@ -29,17 +35,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
     private final TokenService tokenService;
+    private final CorsConfigurationProperties corsConfigurationProperties;
 
     public SecurityConfiguration(CustomUserDetailsService userDetailsService,
-                                 AuthenticationEntryPointJwt unauthorizedHandler,
                                  PasswordEncoder passwordEncoder,
                                  TokenService tokenService,
+                                 CorsConfigurationProperties corsConfigurationProperties,
                                  ObjectMapper objectMapper) {
         this.userDetailsService = userDetailsService;
-        this.unauthorizedHandler = unauthorizedHandler;
+        this.unauthorizedHandler = new AuthenticationEntryPointJwt();
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
         this.objectMapper = objectMapper;
+        this.corsConfigurationProperties = corsConfigurationProperties;
     }
 
     @Bean
@@ -56,7 +64,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 objectMapper);
     }
 
-    @Bean
     public AuthenticationTokenFilter authenticationJwtTokenFilter(TokenService tokenService,
                                                                   CustomUserDetailsService userDetailsService,
                                                                   ObjectMapper objectMapper) {
@@ -82,7 +89,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().configurationSource(configurationSourceCors())
+        http.cors().configurationSource(configurationSourceCors(corsConfigurationProperties))
                 .and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -90,12 +97,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/test/**").permitAll()
                 .anyRequest().authenticated();
 
-        http.addFilterBefore(authenticationJwtTokenFilter(tokenService, userDetailsService, objectMapper),
-                UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(
+                authenticationJwtTokenFilter(tokenService, userDetailsService, objectMapper),
+                UsernamePasswordAuthenticationFilter.class
+        );
     }
 
-    @Bean
-    public CorsConfigurationSource configurationSourceCors() {
-        //
+    public CorsConfigurationSource configurationSourceCors(CorsConfigurationProperties corsConfigurationProperties) {
+
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOriginPatterns(corsConfigurationProperties.getAllowedOriginPatterns());
+        corsConfiguration.addAllowedMethod(corsConfigurationProperties.getAllowedMethods());
+        corsConfiguration.setAllowedHeaders(corsConfigurationProperties.getAllowedHeaders());
+
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(corsConfigurationProperties.getUrlPattern(), corsConfiguration);
+        return source;
     }
 }

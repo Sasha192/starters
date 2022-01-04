@@ -19,6 +19,12 @@
 
 	<dependencies>
 
+		<dependency>
+			<groupId>org.37wp-starters</groupId>
+			<artifactId>none-schema-spring-boot-starter</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.wpstarters.jwtauthprovider.dto.CustomUserDetails;
-import org.wpstarters.jwtauthprovider.dto.UsernameAlreadyExists;
+import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
+import org.wpstarters.jwtauthprovider.exceptions.UsernameAlreadyExists;
 import org.wpstarters.jwtauthprovider.repository.UserDetailsRepository;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 

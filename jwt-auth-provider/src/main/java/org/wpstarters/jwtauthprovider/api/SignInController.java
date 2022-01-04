@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wpstarters.jwtauthprovider.api.state.StateMessage;
-import org.wpstarters.jwtauthprovider.config.TokenService;
-import org.wpstarters.jwtauthprovider.dto.CustomUserDetails;
+import org.wpstarters.jwtauthprovider.service.impl.TokenService;
+import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
 import org.wpstarters.jwtauthprovider.dto.IAuthenticationRequest;
 import org.wpstarters.jwtauthprovider.dto.IStateMessage;
 import org.wpstarters.jwtauthprovider.dto.LoginRequest;
-import org.wpstarters.jwtauthprovider.dto.ProviderType;
+import org.wpstarters.jwtauthprovider.model.ProviderType;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
@@ -157,7 +157,7 @@ public class SignInController {
 
         } catch (RuntimeException exception) {
 
-            logger.error("Exception occurred, sending verification request for {}", authenticationRequest, exception);
+            logger.error("Exception occurred, while sending verification request for {}", authenticationRequest, exception);
             if (exception instanceof AuthenticationException) {
 
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)

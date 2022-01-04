@@ -1,4 +1,4 @@
-package org.wpstarters.jwtauthprovider.dto;
+package org.wpstarters.jwtauthprovider.props;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

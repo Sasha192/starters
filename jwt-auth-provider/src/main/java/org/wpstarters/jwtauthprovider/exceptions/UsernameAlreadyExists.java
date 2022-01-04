@@ -1,4 +1,4 @@
-package org.wpstarters.jwtauthprovider.dto;
+package org.wpstarters.jwtauthprovider.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 

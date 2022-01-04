@@ -1,5 +1,7 @@
 package org.wpstarters.jwtauthprovider.dto;
 
+import org.wpstarters.jwtauthprovider.model.ProviderType;
+
 public interface IAuthenticationRequest {
 
     String getNonce();

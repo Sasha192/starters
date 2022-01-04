@@ -1,14 +1,12 @@
 package org.wpstarters.jwtauthprovider.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.wpstarters.jwtauthprovider.api.state.StateMessage;
-import org.wpstarters.jwtauthprovider.config.TokenService;
+import org.wpstarters.jwtauthprovider.service.impl.TokenService;
 import org.wpstarters.jwtauthprovider.dto.*;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
@@ -70,6 +68,9 @@ public class JwtController {
                     .body(new StateMessage(e.getMessage(), false, e.getExceptionState()));
 
         } catch (Exception e) {
+
+            logger.error("Exception occurred:", e);
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(
                             new StateMessage(
@@ -80,29 +81,6 @@ public class JwtController {
                     );
         }
 
-    }
-
-
-
-    public static class RefreshTokenRequest {
-
-        private final String jwtToken;
-        private final String nonce;
-
-        @JsonCreator
-        public RefreshTokenRequest(@JsonProperty String jwtToken,
-                                   @JsonProperty String nonce) {
-            this.jwtToken = jwtToken;
-            this.nonce = nonce;
-        }
-
-        public String getJwtToken() {
-            return jwtToken;
-        }
-
-        public String getNonce() {
-            return nonce;
-        }
     }
 
 

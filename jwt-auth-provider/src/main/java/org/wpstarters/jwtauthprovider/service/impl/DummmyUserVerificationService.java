@@ -2,7 +2,7 @@ package org.wpstarters.jwtauthprovider.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.wpstarters.jwtauthprovider.dto.IAuthenticationRequest;
-import org.wpstarters.jwtauthprovider.dto.ProviderType;
+import org.wpstarters.jwtauthprovider.model.ProviderType;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 import org.wpstarters.jwtauthprovider.service.IUserVerificationService;
 

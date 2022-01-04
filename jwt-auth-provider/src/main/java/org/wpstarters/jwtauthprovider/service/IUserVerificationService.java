@@ -1,7 +1,7 @@
 package org.wpstarters.jwtauthprovider.service;
 
 import org.wpstarters.jwtauthprovider.dto.IAuthenticationRequest;
-import org.wpstarters.jwtauthprovider.dto.ProviderType;
+import org.wpstarters.jwtauthprovider.model.ProviderType;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.wpstarters.jwtauthprovider.config;
+package org.wpstarters.jwtauthprovider.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,12 +12,11 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.wpstarters.jwtauthprovider.dto.CustomUserDetails;
-import org.wpstarters.jwtauthprovider.dto.RefreshToken;
-import org.wpstarters.jwtauthprovider.dto.RefreshTokenStatus;
+import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
+import org.wpstarters.jwtauthprovider.model.RefreshToken;
+import org.wpstarters.jwtauthprovider.model.RefreshTokenStatus;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
-import org.wpstarters.jwtauthprovider.service.CookieUtils;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
 import org.wpstarters.jwtauthprovider.service.IRefreshTokenRepository;
 

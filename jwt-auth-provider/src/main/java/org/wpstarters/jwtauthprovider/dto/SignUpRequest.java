@@ -1,5 +1,7 @@
 package org.wpstarters.jwtauthprovider.dto;
 
+import org.wpstarters.jwtauthprovider.model.ProviderType;
+
 import java.util.Map;
 
 public class SignUpRequest implements IAuthenticationRequest {

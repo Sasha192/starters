@@ -1,4 +1,4 @@
-package org.wpstarters.jwtauthprovider.config;
+package org.wpstarters.jwtauthprovider.config.context;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;

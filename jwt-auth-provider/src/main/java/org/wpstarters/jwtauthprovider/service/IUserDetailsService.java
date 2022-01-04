@@ -2,8 +2,8 @@ package org.wpstarters.jwtauthprovider.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.wpstarters.jwtauthprovider.dto.CustomUserDetails;
-import org.wpstarters.jwtauthprovider.dto.UsernameAlreadyExists;
+import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
+import org.wpstarters.jwtauthprovider.exceptions.UsernameAlreadyExists;
 
 import java.util.Map;
 

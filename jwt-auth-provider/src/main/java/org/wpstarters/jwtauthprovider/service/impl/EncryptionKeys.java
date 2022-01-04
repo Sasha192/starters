@@ -4,11 +4,10 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.stereotype.Service;
-import org.wpstarters.jwtauthprovider.dto.JksConfigurationProperties;
+import org.wpstarters.jwtauthprovider.props.JksConfigurationProperties;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
 
 import java.security.KeyPair;

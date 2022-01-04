@@ -1,11 +1,13 @@
-package org.wpstarters.jwtauthprovider.service;
+package org.wpstarters.jwtauthprovider.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.wpstarters.jwtauthprovider.config.HttpContextHolder;
+import org.wpstarters.jwtauthprovider.config.context.HttpContextHolder;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
+import org.wpstarters.jwtauthprovider.service.IEncryptionService;
+import org.wpstarters.jwtauthprovider.service.INonceStrategy;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static org.wpstarters.jwtauthprovider.service.CookieUtils.SET_COOKIE_HEADER;
+import static org.wpstarters.jwtauthprovider.service.impl.CookieUtils.SET_COOKIE_HEADER;
 
 @Component
 public class CookieNonceStrategy implements INonceStrategy {
