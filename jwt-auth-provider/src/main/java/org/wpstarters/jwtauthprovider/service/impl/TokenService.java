@@ -1,7 +1,6 @@
 package org.wpstarters.jwtauthprovider.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -17,8 +16,8 @@ import org.wpstarters.jwtauthprovider.model.RefreshToken;
 import org.wpstarters.jwtauthprovider.model.RefreshTokenStatus;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
+import org.wpstarters.jwtauthprovider.repository.IRefreshTokenRepository;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
-import org.wpstarters.jwtauthprovider.service.IRefreshTokenRepository;
 
 import javax.servlet.http.Cookie;
 import java.time.Duration;
@@ -35,18 +34,15 @@ public class TokenService {
 
     private final IEncryptionKeys keyPairSupplier;
     private final String issuer;
-    private final ObjectMapper objectMapper;
     private final IRefreshTokenRepository refreshTokenService;
     private final UserDetailsService userDetailsService;
 
     public TokenService(String issuer,
                         IEncryptionKeys keyPairSupplier,
                         IRefreshTokenRepository refreshTokenService,
-                        UserDetailsService userDetailsService,
-                        ObjectMapper objectMapper) {
+                        UserDetailsService userDetailsService) {
         this.keyPairSupplier = keyPairSupplier;
         this.issuer = issuer;
-        this.objectMapper = objectMapper;
         this.refreshTokenService = refreshTokenService;
         this.userDetailsService = userDetailsService;
     }
@@ -55,7 +51,7 @@ public class TokenService {
             throws JsonProcessingException {
 
         // generate jwt token
-        Map<String, Object> extraDetails = objectMapper.readValue(userDetails.getExtraDetails(), Map.class);
+        Map<String, Object> extraDetails = userDetails.getPublicDetails();
         extraDetails.put("authorities", userDetails.getAuthorities());
         extraDetails.put("provider", userDetails.getProviderType());
 

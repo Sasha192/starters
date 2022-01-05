@@ -1,5 +1,7 @@
 package org.wpstarters.jwtauthprovider.model;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +18,7 @@ public class RefreshToken {
     private UUID id;
 
     @Column(nullable = false)
+    @Length(max = 512, min = 1, message = "Please, specify username no more than 512 characters and no less than 1 character")
     private String username;
 
     @Column(nullable = false)

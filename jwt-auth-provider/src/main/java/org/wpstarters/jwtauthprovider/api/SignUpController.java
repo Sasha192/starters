@@ -206,7 +206,7 @@ public class SignUpController {
                 .basicAccount(true)
                 .username(tokenRequest.getId())
                 .password(tokenRequest.getPassword())
-                .extraDetails(objectMapper.writeValueAsString(tokenRequest.getUserDetails()))
+                .publicDetails(tokenRequest.getPublicDetails())
                 .build();
 
     }

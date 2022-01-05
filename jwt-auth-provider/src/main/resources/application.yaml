@@ -1,0 +1,38 @@
+jwt-properties:
+    issuer: "someone"
+
+cors-configuration-properties:
+    allowedOriginPatterns:
+        - ""
+    allowedMethods:
+        - ""
+    allowedHeaders:
+        - ""
+    urlPattern: ""
+
+jks-props:
+    jksFilePath: ""
+    keyPass: ""
+    keyStore: ""
+    storePass: ""
+    alias: ""
+    keyId: ""
+
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/postgres?currentSchema=backend_oaforest&ssl=false&sslfactory=org.postgresql.ssl.NonValidatingFactory
+        driverClassName: org.postgresql.Driver
+        username: postgres
+        password: postgres
+    jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+        hibernate:
+            ddl-auto: none
+    profiles:
+        active: dev
+    jackson:
+        default-property-inclusion: non_null
+    liquibase:
+        enabled: false

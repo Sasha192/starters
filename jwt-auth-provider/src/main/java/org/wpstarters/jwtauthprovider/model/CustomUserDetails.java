@@ -1,5 +1,9 @@
 package org.wpstarters.jwtauthprovider.model;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,17 +15,23 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
 @Table(name = "user_details")
+@TypeDef(name = "jsonb", typeClass = JsonType.class)
 public class CustomUserDetails implements UserDetails {
 
     private static final Set<GrantedAuthority> authorities = Set.of(new SimpleGrantedAuthority("ROLE_USER"));
 
     @Id
     @Column(name = "username")
+    @Length(max = 512, min = 1, message = "Please, specify username no more than 512 characters and no less than 1 character")
     private String username;
+    @Length(max = 512, min = 8, message = "Please, specify password not less than 8 characters and no more than 512")
     private String password;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
@@ -30,9 +40,10 @@ public class CustomUserDetails implements UserDetails {
     private boolean basicAccount;
     @Enumerated(EnumType.STRING)
     private ProviderType providerType;
-    @Column(name = "extra_details", columnDefinition = "jsonb")
-    // json as a string
-    private String extraDetails;
+    @Column(name = "public_details", columnDefinition = "jsonb")
+    @Type(type = "jsonb")
+    @Size(max = 20)
+    private Map<String, Object> publicDetails;
 
     @Override
     public String getPassword() {
@@ -85,13 +96,12 @@ public class CustomUserDetails implements UserDetails {
         this.providerType = providerType;
     }
 
-    public String getExtraDetails() {
-        // json as a string
-        return extraDetails;
+    public Map<String, Object> getPublicDetails() {
+        return publicDetails;
     }
 
-    public void setExtraDetails(String extraDetails) {
-        this.extraDetails = extraDetails;
+    public void setPublicDetails(Map<String, Object> publicDetails) {
+        this.publicDetails = publicDetails;
     }
 
     public static final class Builder {
@@ -103,7 +113,7 @@ public class CustomUserDetails implements UserDetails {
         private boolean enabled = true;
         private boolean basicAccount = true;
         private ProviderType providerType = ProviderType.BASIC;
-        private String extraDetails = "{}";
+        private Map<String, Object> publicDetails = new HashMap<>();
 
         private PasswordEncoder encoder;
 
@@ -150,8 +160,13 @@ public class CustomUserDetails implements UserDetails {
             return this;
         }
 
-        public Builder extraDetails(String extraDetails) {
-            this.extraDetails = extraDetails;
+        public Builder publicDetails(Map<String, Object> publicDetails) {
+            this.publicDetails = publicDetails;
+            return this;
+        }
+
+        public Builder encoder(PasswordEncoder encoder) {
+            this.encoder = encoder;
             return this;
         }
 
@@ -159,7 +174,7 @@ public class CustomUserDetails implements UserDetails {
             CustomUserDetails customUserDetails = new CustomUserDetails();
             customUserDetails.setBasicAccount(basicAccount);
             customUserDetails.setProviderType(providerType);
-            customUserDetails.setExtraDetails(extraDetails);
+            customUserDetails.setPublicDetails(publicDetails);
             customUserDetails.password = encoder.encode(this.password);
             customUserDetails.enabled = this.enabled;
             customUserDetails.accountNonExpired = this.accountNonExpired;

@@ -1,8 +1,6 @@
 package org.wpstarters.jwtauthprovider.props;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "jks-props")
 public class JksConfigurationProperties {
 
     private String jksFilePath;

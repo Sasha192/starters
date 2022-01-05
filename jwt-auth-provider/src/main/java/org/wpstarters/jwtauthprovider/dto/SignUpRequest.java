@@ -11,7 +11,7 @@ public class SignUpRequest implements IAuthenticationRequest {
     private String code;
     private String password;
     private String nonce;
-    private Map<String, Object> userDetails;
+    private Map<String, Object> publicDetails;
 
     public SignUpRequest() {
     }
@@ -56,11 +56,11 @@ public class SignUpRequest implements IAuthenticationRequest {
         this.nonce = nonce;
     }
 
-    public Map<String, Object> getUserDetails() {
-        return userDetails;
+    public Map<String, Object> getPublicDetails() {
+        return publicDetails;
     }
 
-    public void setUserDetails(Map<String, Object> userDetails) {
-        this.userDetails = userDetails;
+    public void setPublicDetails(Map<String, Object> publicDetails) {
+        this.publicDetails = publicDetails;
     }
 }

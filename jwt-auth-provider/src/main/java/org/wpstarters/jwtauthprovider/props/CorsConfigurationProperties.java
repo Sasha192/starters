@@ -1,14 +1,11 @@
 package org.wpstarters.jwtauthprovider.props;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.List;
 
-@ConfigurationProperties(prefix = "cors-configuration-properties")
 public class CorsConfigurationProperties {
 
     private List<String> allowedOriginPatterns;
-    private String allowedMethods;
+    private List<String> allowedMethods;
     private List<String> allowedHeaders;
     private String urlPattern;
 
@@ -16,7 +13,7 @@ public class CorsConfigurationProperties {
         return allowedOriginPatterns;
     }
 
-    public String getAllowedMethods() {
+    public List<String> getAllowedMethods() {
         return allowedMethods;
     }
 
@@ -32,7 +29,7 @@ public class CorsConfigurationProperties {
         this.allowedOriginPatterns = allowedOriginPatterns;
     }
 
-    public void setAllowedMethods(String allowedMethods) {
+    public void setAllowedMethods(List<String> allowedMethods) {
         this.allowedMethods = allowedMethods;
     }
 

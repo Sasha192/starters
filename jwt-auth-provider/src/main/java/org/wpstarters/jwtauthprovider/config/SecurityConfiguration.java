@@ -20,24 +20,24 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.wpstarters.jwtauthprovider.config.entrypoint.AuthenticationEntryPointJwt;
 import org.wpstarters.jwtauthprovider.config.filters.AuthenticationTokenFilter;
 import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
+import org.wpstarters.jwtauthprovider.repository.IRefreshTokenRepository;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
-import org.wpstarters.jwtauthprovider.service.IRefreshTokenRepository;
+import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
-import org.wpstarters.jwtauthprovider.service.impl.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final CustomUserDetailsService userDetailsService;
+    private final IUserDetailsService userDetailsService;
     private final AuthenticationEntryPointJwt unauthorizedHandler;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
     private final TokenService tokenService;
     private final CorsConfigurationProperties corsConfigurationProperties;
 
-    public SecurityConfiguration(CustomUserDetailsService userDetailsService,
+    public SecurityConfiguration(IUserDetailsService userDetailsService,
                                  PasswordEncoder passwordEncoder,
                                  TokenService tokenService,
                                  CorsConfigurationProperties corsConfigurationProperties,
@@ -50,22 +50,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.corsConfigurationProperties = corsConfigurationProperties;
     }
 
-    @Bean
-    public TokenService jwtUtils(@Value("jwt-properties.issuer") String issuer,
-                                 IEncryptionKeys keyPairSupplier,
-                                 IRefreshTokenRepository refreshTokenService,
-                                 ObjectMapper objectMapper,
-                                 UserDetailsService userDetailsService) {
-        return new TokenService(
-                issuer,
-                keyPairSupplier,
-                refreshTokenService,
-                userDetailsService,
-                objectMapper);
-    }
-
-    public AuthenticationTokenFilter authenticationJwtTokenFilter(TokenService tokenService,
-                                                                  CustomUserDetailsService userDetailsService,
+    private AuthenticationTokenFilter authenticationJwtTokenFilter(TokenService tokenService,
+                                                                  IUserDetailsService userDetailsService,
                                                                   ObjectMapper objectMapper) {
         return new AuthenticationTokenFilter(tokenService, userDetailsService, objectMapper);
     }
@@ -73,18 +59,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
+                .passwordEncoder(passwordEncoder);
     }
 
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return passwordEncoder;
     }
 
     @Override
@@ -103,13 +84,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         );
     }
 
-    public CorsConfigurationSource configurationSourceCors(CorsConfigurationProperties corsConfigurationProperties) {
+    private CorsConfigurationSource configurationSourceCors(CorsConfigurationProperties corsConfigurationProperties) {
 
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOriginPatterns(corsConfigurationProperties.getAllowedOriginPatterns());
-        corsConfiguration.addAllowedMethod(corsConfigurationProperties.getAllowedMethods());
+        for (String method: corsConfigurationProperties.getAllowedMethods()) {
+            corsConfiguration.addAllowedMethod(method);
+        }
         corsConfiguration.setAllowedHeaders(corsConfigurationProperties.getAllowedHeaders());
-
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(corsConfigurationProperties.getUrlPattern(), corsConfiguration);

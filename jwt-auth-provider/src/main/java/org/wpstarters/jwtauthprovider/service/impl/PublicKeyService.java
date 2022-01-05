@@ -31,7 +31,6 @@ public class PublicKeyService implements IPublicKeyService {
 
     public PublicKeyService(IEncryptionKeys keyPairSupplier)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-
         rsaPublicKey = (RSAPublicKey) keyPairSupplier.keyPair().getPublic();
         rsaPrivateKey = (RSAPrivateKey) keyPairSupplier.keyPair().getPrivate();
 
