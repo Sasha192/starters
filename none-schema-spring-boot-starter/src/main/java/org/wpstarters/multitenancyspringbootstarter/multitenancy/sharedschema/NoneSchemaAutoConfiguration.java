@@ -13,14 +13,14 @@ import org.wpstarters.commonwebstarter.ITenantIDResolver;
 import org.wpstarters.multitenancyspringbootstarter.migrations.IMigrationPathProvider;
 import org.wpstarters.multitenancyspringbootstarter.migrations.MigrationPathsProvider;
 import org.wpstarters.multitenancyspringbootstarter.migrations.NoneSchemaMigrationsService;
-import org.wpstarters.multitenancyspringbootstarter.multitenancy.SharedSchema;
+import org.wpstarters.multitenancyspringbootstarter.multitenancy.NoneTenants;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.shared.NoneSchemaTenant;
 
 import javax.sql.DataSource;
 
 @Configuration
-@Conditional(SharedSchema.class)
+@Conditional(NoneTenants.class)
 @Import(value = {
         DefaultNoneSchemaPersistenceConfig.class
 })
