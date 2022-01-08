@@ -55,6 +55,6 @@ public class CustomUserDetailsService implements IUserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        return repository.findById(username).orElse(null);
     }
 }

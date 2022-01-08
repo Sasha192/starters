@@ -63,4 +63,58 @@ public class SignUpRequest implements IAuthenticationRequest {
     public void setPublicDetails(Map<String, Object> publicDetails) {
         this.publicDetails = publicDetails;
     }
+
+
+    public static final class Builder {
+        private String id;
+        private ProviderType provider;
+        private String code;
+        private String password;
+        private String nonce;
+        private Map<String, Object> publicDetails;
+
+        public Builder() {
+        }
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder provider(ProviderType provider) {
+            this.provider = provider;
+            return this;
+        }
+
+        public Builder code(String code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder nonce(String nonce) {
+            this.nonce = nonce;
+            return this;
+        }
+
+        public Builder publicDetails(Map<String, Object> publicDetails) {
+            this.publicDetails = publicDetails;
+            return this;
+        }
+
+        public SignUpRequest build() {
+            SignUpRequest signUpRequest = new SignUpRequest();
+            signUpRequest.setId(id);
+            signUpRequest.setProvider(provider);
+            signUpRequest.setCode(code);
+            signUpRequest.setPassword(password);
+            signUpRequest.setNonce(nonce);
+            signUpRequest.setPublicDetails(publicDetails);
+            return signUpRequest;
+        }
+    }
 }

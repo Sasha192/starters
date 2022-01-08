@@ -56,8 +56,8 @@ public class SignInController {
         this.nonceStrategy = nonceStrategy;
     }
 
-    @PostMapping("/signin/social")
-    // nonce is optional, since we (must) use Authorization code + PKCE flow
+//    @PostMapping("/signin/social")
+//     nonce is optional, since we (must) use Authorization code + PKCE flow
     public ResponseEntity<? extends IStateMessage> socialSignIn(@RequestParam(name = "code") String authorizationCode,
                                           @RequestParam(name = "state") String providerName) {
 
@@ -115,7 +115,7 @@ public class SignInController {
                     if (authentication != null) {
                         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(authentication.getName());
                         String token = tokenService.generateJwtToken(userDetails);
-                        return ResponseEntity.ok(new StateMessage(token, true, null));
+                        return ResponseEntity.ok(new StateMessage("token " + token, true, null));
                     }
                 }
             }

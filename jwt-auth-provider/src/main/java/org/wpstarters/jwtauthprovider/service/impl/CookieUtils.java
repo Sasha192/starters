@@ -38,7 +38,7 @@ public class CookieUtils {
 
             cookieNonce.setHttpOnly(true);
             cookieNonce.setSecure(true);
-            cookieNonce.setMaxAge(60);
+            cookieNonce.setMaxAge(30);
             cookieNonce.setPath("/");
 
             if (strict) {

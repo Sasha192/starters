@@ -3,58 +3,40 @@ package org.wpstarters.jwtauthprovider.props;
 
 public class JksConfigurationProperties {
 
-    private String jksFilePath;
-    private String keyPass;
-    private String keyStore;
-    private String storePass;
-    private String alias;
+    private String privateKeyPath;
+    private String publicKeyPath;
     private String keyId;
+    private String password;
+
+    public void setPublicKeyPath(String publicKeyPath) {
+        this.publicKeyPath = publicKeyPath;
+    }
+
+    public String getPublicKeyPath() {
+        return publicKeyPath;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getKeyId() {
         return keyId;
+    }
+
+    public String getPrivateKeyPath() {
+        return privateKeyPath;
+    }
+
+    public void setPrivateKeyPath(String privateKeyPath) {
+        this.privateKeyPath = privateKeyPath;
     }
 
     public void setKeyId(String keyId) {
         this.keyId = keyId;
     }
 
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public String getJksFilePath() {
-        return jksFilePath;
-    }
-
-    public void setJksFilePath(String jksFilePath) {
-        this.jksFilePath = jksFilePath;
-    }
-
-    public String getKeyPass() {
-        return keyPass;
-    }
-
-    public void setKeyPass(String keyPass) {
-        this.keyPass = keyPass;
-    }
-
-    public String getKeyStore() {
-        return keyStore;
-    }
-
-    public void setKeyStore(String keyStore) {
-        this.keyStore = keyStore;
-    }
-
-    public String getStorePass() {
-        return storePass;
-    }
-
-    public void setStorePass(String storePass) {
-        this.storePass = storePass;
+    public String getPassword() {
+        return this.password;
     }
 }

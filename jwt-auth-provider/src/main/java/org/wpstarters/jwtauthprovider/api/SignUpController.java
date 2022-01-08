@@ -7,10 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.wpstarters.jwtauthprovider.api.state.StateMessage;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
 import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
@@ -26,7 +27,7 @@ import org.wpstarters.jwtauthprovider.service.IUserVerificationService;
 
 import java.util.Map;
 
-@RestController
+@Controller
 public class SignUpController {
 
     private static final Logger logger = LoggerFactory.getLogger(SignUpController.class);
@@ -36,17 +37,20 @@ public class SignUpController {
     private final ObjectMapper objectMapper;
     private final IUserDetailsService userDetailsService;
     private final TokenService tokenService;
+    private final PasswordEncoder passwordEncoder;
 
     public SignUpController(IUserVerificationService IUserVerificationService,
                             ObjectMapper objectMapper,
                             IUserDetailsService userDetailsService,
                             TokenService tokenService,
-                            INonceStrategy nonceStrategy) {
+                            INonceStrategy nonceStrategy,
+                            PasswordEncoder passwordEncoder) {
         this.IUserVerificationService = IUserVerificationService;
         this.objectMapper = objectMapper;
         this.userDetailsService = userDetailsService;
         this.tokenService = tokenService;
         this.nonceStrategy = nonceStrategy;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/signup/basic/1")
@@ -108,7 +112,7 @@ public class SignUpController {
         }
     }
 
-    @PostMapping("/signup/social")
+    //@PostMapping("/signup/social")
     public ResponseEntity<? extends IStateMessage> socialSignUp(@RequestParam(name = "code") String authorizationCode,
                                           @RequestParam(name = "state") String providerName) {
 
@@ -173,16 +177,16 @@ public class SignUpController {
         String encryptedNonce = nonceStrategy.generateNonce();
 
         if (nonceStrategy.saveNonce(encryptedNonce)) {
-            return ResponseEntity.accepted()
+            return ResponseEntity.ok()
                     .body(
                             new StateMessage(
-                                    "Nonce:" + encryptedNonce,
+                                    "nonce " + encryptedNonce,
                                     true,
                                     null
                             )
                     );
         } else {
-            return ResponseEntity.accepted()
+            return ResponseEntity.internalServerError()
                     .body(
                             new StateMessage(
                                     "Can not save secret nonce for this request",
@@ -207,6 +211,7 @@ public class SignUpController {
                 .username(tokenRequest.getId())
                 .password(tokenRequest.getPassword())
                 .publicDetails(tokenRequest.getPublicDetails())
+                .encoder(passwordEncoder)
                 .build();
 
     }

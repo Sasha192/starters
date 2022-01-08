@@ -7,11 +7,12 @@ create table user_details
         constraint user_details_pk
             primary key,
     password varchar(512) not null,
-    accountnonexpired bool,
-    accountnonlocked bool,
+    account_non_expired bool,
+    account_non_locked bool,
+    credentials_non_expired bool,
     enabled bool,
-    basicaccount bool default true,
-    providertype varchar(16),
-    publicdetails jsonb
+    basic_account bool default true,
+    provider_type varchar(16),
+    public_details jsonb
 );
 

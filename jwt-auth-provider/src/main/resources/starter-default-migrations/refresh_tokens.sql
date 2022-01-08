@@ -5,14 +5,14 @@ create table refresh_tokens
 (
     id uuid not null,
     username varchar(512) not null,
-    unixcreated bigint not null,
-    unixexpired bigint not null,
-    tokenid varchar not null,
+    unix_created bigint not null,
+    unix_expired bigint not null,
+    token_id varchar not null,
     status varchar(16)
 );
 
 create unique index refresh_tokens_tokenid_uindex
-    on refresh_tokens (tokenid);
+    on refresh_tokens (token_id);
 
 create unique index refresh_tokens_username_uindex
     on refresh_tokens (username);

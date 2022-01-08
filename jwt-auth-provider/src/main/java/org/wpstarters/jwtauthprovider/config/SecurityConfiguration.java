@@ -1,7 +1,6 @@
 package org.wpstarters.jwtauthprovider.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -20,8 +18,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.wpstarters.jwtauthprovider.config.entrypoint.AuthenticationEntryPointJwt;
 import org.wpstarters.jwtauthprovider.config.filters.AuthenticationTokenFilter;
 import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
-import org.wpstarters.jwtauthprovider.repository.IRefreshTokenRepository;
-import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
 
@@ -74,9 +70,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/test/**").permitAll()
-                .anyRequest().authenticated();
+                .authorizeRequests().anyRequest().permitAll();
 
         http.addFilterBefore(
                 authenticationJwtTokenFilter(tokenService, userDetailsService, objectMapper),

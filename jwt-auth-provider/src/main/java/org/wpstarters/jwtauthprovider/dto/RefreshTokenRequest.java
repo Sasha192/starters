@@ -9,8 +9,8 @@ public class RefreshTokenRequest {
     private final String nonce;
 
     @JsonCreator
-    public RefreshTokenRequest(@JsonProperty String jwtToken,
-                               @JsonProperty String nonce) {
+    public RefreshTokenRequest(@JsonProperty("jwtToken") String jwtToken,
+                               @JsonProperty("nonce") String nonce) {
         this.jwtToken = jwtToken;
         this.nonce = nonce;
     }

@@ -107,7 +107,13 @@ public class TokenService {
 
                 refreshTokenService.deleteById(refreshToken.getId());
                 CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(claims.getSubject());
-                return generateJwtToken(userDetails);
+
+                if (userDetails != null) {
+                    return generateJwtToken(userDetails);
+                }
+                else {
+                    throw new ExtendedAuthenticationException("No such user", ExceptionState.NO_SUCH_USER);
+                }
 
             }
 

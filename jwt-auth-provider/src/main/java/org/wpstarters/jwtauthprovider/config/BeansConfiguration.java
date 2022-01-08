@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,7 +19,6 @@ import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.CustomUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
-import org.wpstarters.multitenancyspringbootstarter.MultitenancyStarterConfiguration;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.StarterConfigurationProperties;
 import org.wpstarters.multitenancyspringbootstarter.multitenancy.tenantcrud.shared.NoneSchemaTenant;
 
@@ -56,6 +56,7 @@ public class BeansConfiguration {
     }
 
     @Bean
+    @Primary
     public ITenantIDResolver<NoneSchemaTenant> noneSchemaTenantITenantIDResolver(StarterConfigurationProperties properties) {
         return (tenant) -> properties.getDefaultSchema();
     }

@@ -1,6 +1,7 @@
 package org.wpstarters.jwtauthprovider.config.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -72,15 +73,11 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (notBlank(headerAuth) && headerAuth.startsWith(BEARER)) {
+        if (StringUtils.isNotBlank(headerAuth) && headerAuth.startsWith(BEARER)) {
             return headerAuth.substring(BEARER.length()).strip();
         }
 
         return null;
-    }
-
-    private boolean notBlank(String headerAuth) {
-        return !headerAuth.isBlank();
     }
 
     public static class WebRequestDetails {

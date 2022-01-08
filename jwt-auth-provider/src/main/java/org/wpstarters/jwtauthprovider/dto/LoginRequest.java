@@ -52,4 +52,51 @@ public class LoginRequest implements IAuthenticationRequest {
     public void setNonce(String nonce) {
         this.nonce = nonce;
     }
+
+
+    public static final class Builder {
+        private String id;
+        private ProviderType provider;
+        private String code;
+        private String password;
+        private String nonce;
+
+        public Builder() {
+        }
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder provider(ProviderType provider) {
+            this.provider = provider;
+            return this;
+        }
+
+        public Builder code(String code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder nonce(String nonce) {
+            this.nonce = nonce;
+            return this;
+        }
+
+        public LoginRequest build() {
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setId(id);
+            loginRequest.setProvider(provider);
+            loginRequest.setCode(code);
+            loginRequest.setPassword(password);
+            loginRequest.setNonce(nonce);
+            return loginRequest;
+        }
+    }
 }

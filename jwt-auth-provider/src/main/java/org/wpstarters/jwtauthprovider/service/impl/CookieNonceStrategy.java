@@ -2,16 +2,18 @@ package org.wpstarters.jwtauthprovider.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.wpstarters.jwtauthprovider.config.context.HttpContextHolder;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
-import org.wpstarters.jwtauthprovider.service.IEncryptionService;
 import org.wpstarters.jwtauthprovider.service.INonceStrategy;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -23,10 +25,10 @@ public class CookieNonceStrategy implements INonceStrategy {
     private static final Logger logger = LoggerFactory.getLogger(CookieNonceStrategy.class);
     private static final String COOKIE_NONCE = "COOKIE_NONCE";
 
-    private final IEncryptionService encryptionService;
+    private final PasswordEncoder passwordEncoder;
 
-    public CookieNonceStrategy(IEncryptionService encryptionService) {
-        this.encryptionService = encryptionService;
+    public CookieNonceStrategy() {
+        this.passwordEncoder = new Pbkdf2PasswordEncoder(String.valueOf(new SecureRandom().nextLong()));
     }
 
     @Override
@@ -35,7 +37,7 @@ public class CookieNonceStrategy implements INonceStrategy {
             return false;
         }
         try {
-            if (HttpContextHolder.request.get() != null) {
+            if (HttpContextHolder.request.get() != null && HttpContextHolder.response.get() != null) {
                 HttpServletRequest request = HttpContextHolder.request.get();
 
                 Cookie cookieNonce = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(COOKIE_NONCE))
@@ -44,8 +46,7 @@ public class CookieNonceStrategy implements INonceStrategy {
                         );
 
                 if (cookieNonce.getSecure() && cookieNonce.isHttpOnly()) {
-                    String expectedNonce = encryptionService.encrypt(cookieNonce.getValue());
-                    return expectedNonce.equals(nonce); // actual nonce is 'nonce' variable
+                    return passwordEncoder.matches(cookieNonce.getValue(), nonce);
                 } else {
                     throw new ExtendedAuthenticationException("Invalid cookie: must be httpOnly and secured", ExceptionState.INVALID_NONCE);
                 }
@@ -62,7 +63,7 @@ public class CookieNonceStrategy implements INonceStrategy {
             String nonce = UUID.randomUUID().toString().replaceAll("-", "");
             Cookie cookieNonce = new Cookie(COOKIE_NONCE, nonce);
             CookieUtils.addSecureCookie(cookieNonce, true);
-            return encryptionService.encrypt(nonce);
+            return passwordEncoder.encode(nonce);
         } catch (Exception e) {
             logger.error("Exception occurred while encrypting the nonce", e);
             throw new ExtendedAuthenticationException("", ExceptionState.INTERNAL_SERVER_ERROR);

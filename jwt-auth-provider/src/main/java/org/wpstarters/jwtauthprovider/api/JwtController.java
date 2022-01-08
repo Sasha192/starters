@@ -4,10 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.wpstarters.jwtauthprovider.api.state.StateMessage;
+import org.wpstarters.jwtauthprovider.dto.IStateMessage;
+import org.wpstarters.jwtauthprovider.dto.RefreshTokenRequest;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
-import org.wpstarters.jwtauthprovider.dto.*;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
@@ -15,7 +19,7 @@ import org.wpstarters.jwtauthprovider.service.INonceStrategy;
 
 import java.util.Map;
 
-@RestController
+@Controller
 public class JwtController {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtController.class);
@@ -37,13 +41,13 @@ public class JwtController {
         return this.keyPairSupplier.jwkSet().toJSONObject();
     }
 
-    @PostMapping
-    public ResponseEntity<? extends IStateMessage> refreshToken(
-            @RequestBody RefreshTokenRequest refreshTokenRequest,
-            @RequestParam String nonce) {
+    @PostMapping(value = "/refresh-token",
+            consumes = Utf8Json.APPLICATION_JSON_VALUE,
+            produces = Utf8Json.APPLICATION_JSON_VALUE)
+    public ResponseEntity<? extends IStateMessage> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
 
         try {
-            if (nonceStrategy.validNonce(nonce)) {
+            if (nonceStrategy.validNonce(refreshTokenRequest.getNonce())) {
                 
                 String newJwtToken = tokenService.refreshToken(refreshTokenRequest.getJwtToken());
 
