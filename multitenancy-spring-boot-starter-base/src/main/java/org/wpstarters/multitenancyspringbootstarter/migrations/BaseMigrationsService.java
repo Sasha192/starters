@@ -2,6 +2,8 @@ package org.wpstarters.multitenancyspringbootstarter.migrations;
 
 import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
+import liquibase.resource.FileSystemResourceAccessor;
+import liquibase.resource.ResourceAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
@@ -58,8 +60,16 @@ public abstract class BaseMigrationsService<T extends Tenant<?>> implements IMig
         logger.debug("RUNNING MIGRATIONS on {} tenant", tenant);
         for (URI migrationUri: migrationsUris) {
             String migrationPath = relativizeToClasspathMigrationUri(migrationUri);
+            ResourceAccessor resourceAccessor = createResourceAccessor(migrationUri);
             logger.debug("STARTING MIGRATION {} on {} tenant", migrationPath, tenant);
-            SpringLiquibase liquibase = buildDefault(dataSource, tenant.getSchema(), migrationPath, resourceLoader, liquibaseProperties);
+            SpringLiquibase liquibase = buildDefault(
+                    dataSource,
+                    tenant.getSchema(),
+                    migrationPath,
+                    resourceLoader,
+                    resourceAccessor,
+                    liquibaseProperties
+            );
             liquibase.afterPropertiesSet();
             logger.debug("FINISHED MIGRATION {} on {} tenant", migrationPath, tenant);
         }
@@ -86,10 +96,16 @@ public abstract class BaseMigrationsService<T extends Tenant<?>> implements IMig
             // 2. get Path to the classpath
             // 3. relativize to the classpath
             Path absolutePath = normalizePath(migrationsUri);
-            Path rootPath = absolutePath.getParent().getParent();
-            migrationPath = rootPath.relativize(absolutePath).toString();
+            Path classPath = absolutePath.getParent().getParent();
+            migrationPath = classPath.relativize(absolutePath).toString();
         }
         return migrationPath;
+    }
+
+    private ResourceAccessor createResourceAccessor(URI migrationsUri) {
+        Path absolutePath = normalizePath(migrationsUri);
+        Path classPath = absolutePath.getParent().getParent();
+        return new FileSystemResourceAccessor(classPath.toFile());
     }
 
     private boolean isClasspathResource(String uriScheme) {

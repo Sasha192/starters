@@ -1,6 +1,6 @@
 package org.wpstarters.multitenancyspringbootstarter.multitenancy;
 
-import liquibase.integration.spring.SpringLiquibase;
+import liquibase.resource.ResourceAccessor;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.core.io.ResourceLoader;
 
@@ -8,12 +8,17 @@ import javax.sql.DataSource;
 
 public class SpringLiquibaseBuilder {
 
-    public static SpringLiquibase buildDefault(DataSource dataSource,
-                                               String schema,
-                                               String migrationPath,
-                                               ResourceLoader resourceLoader,
-                                               LiquibaseProperties liquibaseProperties) {
-        SpringLiquibase liquibase = new SpringLiquibase();
+    private SpringLiquibaseBuilder() {
+        // no-args constructor
+    }
+
+    public static Liquibase37 buildDefault(DataSource dataSource,
+                                           String schema,
+                                           String migrationPath,
+                                           ResourceLoader resourceLoader,
+                                           ResourceAccessor resourceAccessor,
+                                           LiquibaseProperties liquibaseProperties) {
+        Liquibase37 liquibase = new Liquibase37(resourceAccessor);
         liquibase.setChangeLog(migrationPath);
         liquibase.setResourceLoader(resourceLoader);
         liquibase.setDataSource(dataSource);
