@@ -112,7 +112,7 @@ public class SignInController {
                     );
 
 
-                    if (authentication != null) {
+                    if (authentication != null && authentication.isAuthenticated()) {
                         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(authentication.getName());
                         String token = tokenService.generateJwtToken(userDetails);
                         return ResponseEntity.ok(new StateMessage("token " + token, true, null));

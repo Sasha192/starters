@@ -11,6 +11,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.transaction.annotation.Transactional;
 import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
 import org.wpstarters.jwtauthprovider.model.RefreshToken;
 import org.wpstarters.jwtauthprovider.model.RefreshTokenStatus;
@@ -34,16 +35,16 @@ public class TokenService {
 
     private final IEncryptionKeys keyPairSupplier;
     private final String issuer;
-    private final IRefreshTokenRepository refreshTokenService;
+    private final IRefreshTokenRepository refreshTokenRepository;
     private final UserDetailsService userDetailsService;
 
     public TokenService(String issuer,
                         IEncryptionKeys keyPairSupplier,
-                        IRefreshTokenRepository refreshTokenService,
+                        IRefreshTokenRepository refreshTokenRepository,
                         UserDetailsService userDetailsService) {
         this.keyPairSupplier = keyPairSupplier;
         this.issuer = issuer;
-        this.refreshTokenService = refreshTokenService;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.userDetailsService = userDetailsService;
     }
 
@@ -84,7 +85,10 @@ public class TokenService {
                 .build();
 
         // set refresh token to cookies
-        refreshTokenService.save(refreshToken);
+        if (refreshTokenRepository.findRefreshTokenByUsernameEquals(userDetails.getUsername()).isPresent()) {
+            refreshTokenRepository.deleteRefreshTokenByUsernameEquals(userDetails.getUsername());
+        }
+        refreshTokenRepository.save(refreshToken);
         setRefreshCookie(refreshToken);
 
         // return jwt token
@@ -105,7 +109,7 @@ public class TokenService {
 
             if (validateRefreshTokenAndJwt(claims.getSubject(), claims.getId(), refreshToken)) {
 
-                refreshTokenService.deleteById(refreshToken.getId());
+                refreshTokenRepository.deleteById(refreshToken.getId());
                 CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(claims.getSubject());
 
                 if (userDetails != null) {
@@ -193,11 +197,11 @@ public class TokenService {
             if (cookieRefreshToken.isHttpOnly() && cookieRefreshToken.getSecure()) {
 
                 UUID refreshTokenId = UUID.fromString(cookieRefreshToken.getValue());
-                RefreshToken refreshToken = refreshTokenService.findById(refreshTokenId).orElse(null);
+                RefreshToken refreshToken = refreshTokenRepository.findById(refreshTokenId).orElse(null);
 
                 if (refreshToken != null) {
                     if ((!refreshToken.isValid())) {
-                        refreshTokenService.deleteById(refreshTokenId);
+                        refreshTokenRepository.deleteById(refreshTokenId);
                         return null;
                     } else {
                         return refreshToken;
