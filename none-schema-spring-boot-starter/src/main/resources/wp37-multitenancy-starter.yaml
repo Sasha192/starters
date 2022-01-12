@@ -1,0 +1,15 @@
+wp37-multitenancy-starter:
+  enabled: true
+  multitenancy: NONE
+  defaultSchema: public
+  runLiquibaseForTenants: false
+  cache:
+    maxSize: 20
+    expiration: 30
+    timeUnit: MINUTES
+  defaultScan:
+    entityPackages:
+  default-liquibase:
+    database-change-log-table: default-database-change-log
+  multitenancy-liquibase:
+    database-change-log-table: tenancy-database-change-log

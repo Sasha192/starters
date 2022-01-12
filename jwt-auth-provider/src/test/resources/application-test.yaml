@@ -1,0 +1,51 @@
+jwt-properties:
+  issuer: "someone"
+
+cors-configuration-properties:
+  allowedOriginPatterns:
+    - "*"
+  allowedMethods:
+    - "*"
+  allowedHeaders:
+    - "*"
+  urlPattern: "/**"
+
+jks-props:
+  privateKeyPath: "private.pem"
+  publicKeyPath: "public.pem"
+  keyId: "jwt-key"
+  password: "01123581321Sasha"
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=backend_oaforest&ssl=false&sslfactory=org.postgresql.ssl.NonValidatingFactory
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+  jackson:
+    default-property-inclusion: non_null
+  liquibase:
+    enabled: false
+
+wp37-multitenancy-starter:
+  enabled: true
+  multitenancy: NONE
+  defaultSchema: public
+  runLiquibaseForTenants: false
+  cache:
+    maxSize: 20
+    expiration: 30
+    timeUnit: MINUTES
+  defaultScan:
+    entityPackages:
+  default-liquibase:
+    database-change-log-table: default-database-change-log
+  multitenancy-liquibase:
+    database-change-log-table: tenancy-database-change-log
+
