@@ -12,5 +12,4 @@ public class CommonStarterAutoConfiguration implements WebMvcConfigurer {
         registry.addInterceptor(new HttpContextHolder());
     }
 
-
 }
