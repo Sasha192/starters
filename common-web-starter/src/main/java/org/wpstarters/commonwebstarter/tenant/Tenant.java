@@ -1,4 +1,4 @@
-package org.wpstarters.commonwebstarter;
+package org.wpstarters.commonwebstarter.tenant;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

@@ -11,7 +11,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.transaction.annotation.Transactional;
 import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
 import org.wpstarters.jwtauthprovider.model.RefreshToken;
 import org.wpstarters.jwtauthprovider.model.RefreshTokenStatus;

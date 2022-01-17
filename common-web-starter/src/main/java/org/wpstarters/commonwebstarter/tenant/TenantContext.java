@@ -1,4 +1,4 @@
-package org.wpstarters.commonwebstarter;
+package org.wpstarters.commonwebstarter.tenant;
 
 public class TenantContext {
 

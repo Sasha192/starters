@@ -1,4 +1,4 @@
-package org.wpstarters.commonwebstarter;
+package org.wpstarters.commonwebstarter.tenant;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -6,7 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-class TenantContextInterceptor implements HandlerInterceptor {
+public class TenantContextInterceptor implements HandlerInterceptor {
 
     private static final String TENANT_HEADER_NAME = "X-TENANT-ID";
 
