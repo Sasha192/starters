@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 public class StarterConfigurationProperties {
 
-    public static final String MULTITENANCY_PROPERTY = "multitenancy";
+    public static final String MULTITENANCY_PROPERTY = "wp37-multitenancy-starter.multitenancy";
 
     private Multitenancy multitenancy;
     private String defaultSchema;
