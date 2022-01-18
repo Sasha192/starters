@@ -1,4 +1,6 @@
-package org.wpstarters.commontoolsstarter.throttle;
+package org.wpstarters.jwtauthprovider.throttle;
+
+import org.wpstarters.commontoolsstarter.throttle.IThrottleService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
