@@ -19,6 +19,7 @@ import org.wpstarters.jwtauthprovider.config.entrypoint.AuthenticationEntryPoint
 import org.wpstarters.jwtauthprovider.config.filters.AuthenticationTokenFilter;
 import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
 import org.wpstarters.jwtauthprovider.props.ThrottlingConfigurationProperties;
+import org.wpstarters.jwtauthprovider.service.ITokenService;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
 import org.wpstarters.jwtauthprovider.throttle.ConcurrentHashMapThrottling;
@@ -33,12 +34,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final AuthenticationEntryPointJwt unauthorizedHandler;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
-    private final TokenService tokenService;
+    private final ITokenService tokenService;
     private final CorsConfigurationProperties corsConfigurationProperties;
 
     public SecurityConfiguration(IUserDetailsService userDetailsService,
                                  PasswordEncoder passwordEncoder,
-                                 TokenService tokenService,
+                                 ITokenService tokenService,
                                  CorsConfigurationProperties corsConfigurationProperties,
                                  ObjectMapper objectMapper) {
         this.userDetailsService = userDetailsService;
@@ -49,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.corsConfigurationProperties = corsConfigurationProperties;
     }
 
-    private AuthenticationTokenFilter authenticationJwtTokenFilter(TokenService tokenService,
+    private AuthenticationTokenFilter authenticationJwtTokenFilter(ITokenService tokenService,
                                                                   IUserDetailsService userDetailsService,
                                                                   ObjectMapper objectMapper) {
         return new AuthenticationTokenFilter(tokenService, userDetailsService, objectMapper);

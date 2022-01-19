@@ -3,8 +3,7 @@ package org.wpstarters.jwtauthprovider.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.wpstarters.jwtauthprovider.config.conditional.ThrottlingEnabled;
 import org.wpstarters.jwtauthprovider.config.context.RequestFingerprintUtil;
 import org.wpstarters.jwtauthprovider.props.ThrottlingConfigurationProperties;
@@ -15,7 +14,7 @@ import org.wpstarters.jwtauthprovider.throttle.ThrottleFilterAspect;
 
 @Configuration
 @Conditional(value = ThrottlingEnabled.class)
-public class ThrottlingEnabledAutoConfiguration implements WebMvcConfigurer {
+public class ThrottlingEnabledAutoConfiguration {
 
     private final IThrottleService throttleService;
     private final ThrottlingConfigurationProperties throttlingConfigurationProperties;
@@ -25,9 +24,9 @@ public class ThrottlingEnabledAutoConfiguration implements WebMvcConfigurer {
         this.throttlingConfigurationProperties = throttlingConfigurationProperties;
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RequestFingerprintUtil(throttlingConfigurationProperties.isConsiderXForward()));
+    @Bean
+    public HandlerInterceptor requestFingerPrintInterceptor() {
+        return new RequestFingerprintUtil(throttlingConfigurationProperties.isConsiderXForward());
     }
 
     @Bean

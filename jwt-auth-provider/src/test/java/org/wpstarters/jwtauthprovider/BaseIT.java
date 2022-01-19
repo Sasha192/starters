@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.wpstarters.jwtauthprovider.config.BeansConfiguration;
 import org.wpstarters.jwtauthprovider.config.SecurityConfiguration;
+import org.wpstarters.jwtauthprovider.config.WebConfiguration;
 
 @SpringBootTest(classes = {
         JwtAuthProviderApplication.class,

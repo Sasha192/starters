@@ -11,7 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.wpstarters.commonwebstarter.ITenantIDResolver;
+import org.wpstarters.jwtauthprovider.config.context.HttpContextHolder;
 import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
 import org.wpstarters.jwtauthprovider.props.JksConfigurationProperties;
 import org.wpstarters.jwtauthprovider.props.ThrottlingConfigurationProperties;
@@ -91,5 +93,9 @@ public class BeansConfiguration {
         return (tenant) -> properties.getDefaultSchema();
     }
 
+    @Bean
+    public HandlerInterceptor httpContextHolder() {
+        return new HttpContextHolder();
+    }
 
 }
