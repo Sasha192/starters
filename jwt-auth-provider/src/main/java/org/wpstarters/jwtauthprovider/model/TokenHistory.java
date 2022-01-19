@@ -16,67 +16,46 @@ public class TokenHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String username;
 
-    private String ip;
+    @Column(name = "ip_address", nullable = false)
+    private String ipAddress;
 
-    @Column(name = "useragent")
+    @Column(name = "user_agent", nullable = false)
     private String userAgent;
 
-    private long unixTimeToUtc;
+    @Column(name = "unix_created")
+    private long unixCreated;
 
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
     public String getUserAgent() {
         return userAgent;
     }
 
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public long getUnixTimeToUtc() {
-        return unixTimeToUtc;
-    }
-
-    public void setUnixTimeToUtc(long unixTimeToUtc) {
-        this.unixTimeToUtc = unixTimeToUtc;
+    public long getUnixCreated() {
+        return unixCreated;
     }
 
 
     public static final class Builder {
         private Long id;
         private String username;
-        private String ip;
+        private String ipAddress;
         private String userAgent;
-        private long unixTimeToUtc;
-
-        public Builder() {
-            this.unixTimeToUtc = Instant.now().toEpochMilli();
-        }
+        private long unixCreated = Instant.now().getEpochSecond();
 
         public Builder id(Long id) {
             this.id = id;
@@ -88,8 +67,8 @@ public class TokenHistory {
             return this;
         }
 
-        public Builder ip(String ip) {
-            this.ip = ip;
+        public Builder ipAddress(String ipAddress) {
+            this.ipAddress = ipAddress;
             return this;
         }
 
@@ -98,18 +77,18 @@ public class TokenHistory {
             return this;
         }
 
-        public Builder unixTimeToUtc(long unixTimeToUtc) {
-            this.unixTimeToUtc = unixTimeToUtc;
+        public Builder unixCreated(long unixCreated) {
+            this.unixCreated = unixCreated;
             return this;
         }
 
         public TokenHistory build() {
             TokenHistory tokenHistory = new TokenHistory();
-            tokenHistory.setId(id);
-            tokenHistory.setUsername(username);
-            tokenHistory.setIp(ip);
-            tokenHistory.setUserAgent(userAgent);
-            tokenHistory.setUnixTimeToUtc(unixTimeToUtc);
+            tokenHistory.id = this.id;
+            tokenHistory.unixCreated = this.unixCreated;
+            tokenHistory.userAgent = this.userAgent;
+            tokenHistory.username = this.username;
+            tokenHistory.ipAddress = this.ipAddress;
             return tokenHistory;
         }
     }

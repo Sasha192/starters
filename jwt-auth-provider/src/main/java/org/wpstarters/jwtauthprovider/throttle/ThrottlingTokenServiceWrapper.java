@@ -4,7 +4,7 @@ package org.wpstarters.jwtauthprovider.throttle;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wpstarters.jwtauthprovider.config.context.RequestFingerPrintHolder;
+import org.wpstarters.jwtauthprovider.config.context.RequestFingerprintUtil;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 import org.wpstarters.jwtauthprovider.exceptions.ThrottledException;
@@ -27,7 +27,7 @@ public class ThrottlingTokenServiceWrapper implements ITokenService {
     public String generateJwtToken(CustomUserDetails userDetails) throws JsonProcessingException {
 
         String usernameFingerprint = userDetails.getUsername();
-        String fingerPrint = RequestFingerPrintHolder.fingerPrint.get();
+        String fingerPrint = RequestFingerprintUtil.requestIpAddress();
 
         try {
             if (throttleService.allow(usernameFingerprint) && throttleService.allow(fingerPrint)) {
@@ -52,7 +52,7 @@ public class ThrottlingTokenServiceWrapper implements ITokenService {
     @Override
     public String refreshToken(String jwtToken) throws JsonProcessingException {
         String usernameFingerprint = tokenService.getUserNameFromJwtToken(jwtToken);
-        String fingerPrint = RequestFingerPrintHolder.fingerPrint.get();
+        String fingerPrint = RequestFingerprintUtil.requestIpAddress();
 
         try {
             if (throttleService.allow(usernameFingerprint) && throttleService.allow(fingerPrint)) {

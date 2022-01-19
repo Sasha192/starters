@@ -12,13 +12,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.wpstarters.commonwebstarter.ITenantIDResolver;
-import org.wpstarters.jwtauthprovider.exceptions.ThrottledException;
 import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
 import org.wpstarters.jwtauthprovider.props.JksConfigurationProperties;
 import org.wpstarters.jwtauthprovider.props.ThrottlingConfigurationProperties;
 import org.wpstarters.jwtauthprovider.repository.IRefreshTokenRepository;
 import org.wpstarters.jwtauthprovider.repository.UserDetailsRepository;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
+import org.wpstarters.jwtauthprovider.service.ITokenService;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.CustomUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
@@ -73,11 +73,11 @@ public class BeansConfiguration {
     }
 
     @Bean
-    public TokenService jwtUtils(@Value("jwt-properties.issuer") String issuer,
-                                 IEncryptionKeys keyPairSupplier,
-                                 IRefreshTokenRepository refreshTokenService,
-                                 UserDetailsService userDetailsService,
-                                 @Autowired(required = false) IThrottleService throttleService) {
+    public ITokenService jwtUtils(@Value("jwt-properties.issuer") String issuer,
+                                  IEncryptionKeys keyPairSupplier,
+                                  IRefreshTokenRepository refreshTokenService,
+                                  UserDetailsService userDetailsService,
+                                  @Autowired(required = false) IThrottleService throttleService) {
 
         return new ThrottlingTokenServiceWrapper(
                 new TokenService(issuer, keyPairSupplier, refreshTokenService, userDetailsService),

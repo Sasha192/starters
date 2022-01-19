@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wpstarters.jwtauthprovider.config.context.RequestFingerPrintHolder;
+import org.wpstarters.jwtauthprovider.config.context.RequestFingerprintUtil;
 import org.wpstarters.jwtauthprovider.exceptions.ThrottledException;
 import org.wpstarters.jwtauthprovider.exceptions.ThrottledExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ThrottledNestedRuntimeException;
@@ -25,7 +25,7 @@ public class ThrottleFilterAspect {
     public Object getSessionAfter(ProceedingJoinPoint joinPoint, ThrottlingPerIP throttlingPerIPAnnotation) {
         try {
 
-            String fingerPrint = RequestFingerPrintHolder.fingerPrint.get();
+            String fingerPrint = RequestFingerprintUtil.requestIpAddress();
 
             if (throttleService.allow(fingerPrint)) {
 
