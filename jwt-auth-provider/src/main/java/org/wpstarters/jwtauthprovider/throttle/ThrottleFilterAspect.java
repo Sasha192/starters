@@ -5,20 +5,15 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.wpstarters.commontoolsstarter.context.FingerPrintHolder;
-import org.wpstarters.commontoolsstarter.exceptions.ThrottledException;
-import org.wpstarters.commontoolsstarter.exceptions.ThrottledExceptionState;
-import org.wpstarters.commontoolsstarter.exceptions.ThrottledNestedRuntimeException;
-import org.wpstarters.commontoolsstarter.throttle.IThrottleService;
-import org.wpstarters.commontoolsstarter.throttle.Throttle;
-
+import org.wpstarters.jwtauthprovider.config.context.RequestFingerPrintHolder;
+import org.wpstarters.jwtauthprovider.exceptions.ThrottledException;
+import org.wpstarters.jwtauthprovider.exceptions.ThrottledExceptionState;
+import org.wpstarters.jwtauthprovider.exceptions.ThrottledNestedRuntimeException;
 
 @Aspect
-@Component
 public class ThrottleFilterAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(org.wpstarters.commontoolsstarter.throttle.ThrottleFilterAspect.class);
+    private static final Logger logger = LoggerFactory.getLogger(ThrottleFilterAspect.class);
 
     private final IThrottleService throttleService;
 
@@ -26,14 +21,11 @@ public class ThrottleFilterAspect {
         this.throttleService = throttleService;
     }
 
-    @Around(value = "@annotation(throttleAnnotation)")
-    public Object getSessionAfter(ProceedingJoinPoint joinPoint, Throttle throttleAnnotation) {
-
-        String logMessage = "";
-
+    @Around(value = "@annotation(throttlingPerIPAnnotation)")
+    public Object getSessionAfter(ProceedingJoinPoint joinPoint, ThrottlingPerIP throttlingPerIPAnnotation) {
         try {
 
-            String fingerPrint = FingerPrintHolder.fingerPrint.get();
+            String fingerPrint = RequestFingerPrintHolder.fingerPrint.get();
 
             if (throttleService.allow(fingerPrint)) {
 
@@ -43,7 +35,7 @@ public class ThrottleFilterAspect {
 
             } else {
 
-                throw new ThrottledException("You was throttled", throttleAnnotation.delayInMs(), ThrottledExceptionState.THROTTLED);
+                throw new ThrottledException("You was throttled", throttlingPerIPAnnotation.delayInMs(), ThrottledExceptionState.THROTTLED);
 
             }
 
@@ -51,8 +43,7 @@ public class ThrottleFilterAspect {
         } catch (Throwable throwable) {
 
             logger.error("Logger exception: ", throwable);
-            logMessage = "Internal server error";
-            throw new ThrottledNestedRuntimeException(throwable, logMessage, 0, ThrottledExceptionState.INTERNAL_SERVER_ERROR);
+            throw new ThrottledNestedRuntimeException(throwable, "Internal server error", 0, ThrottledExceptionState.INTERNAL_SERVER_ERROR);
 
         }
 

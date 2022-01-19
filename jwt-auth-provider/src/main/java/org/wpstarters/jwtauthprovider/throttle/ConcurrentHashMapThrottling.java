@@ -1,27 +1,23 @@
 package org.wpstarters.jwtauthprovider.throttle;
 
-import org.wpstarters.commontoolsstarter.throttle.IThrottleService;
-
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConcurrentHashMapThrottling implements IThrottleService {
 
-    private static final ConcurrentHashMap<String, ThrottleTokenPerFingerprint> throttlingMap = new ConcurrentHashMap<String, ThrottleTokenPerFingerprint>();
-    private int timeWindow = 60000;
-    private byte maxNumberOfRequestsWithinTimeWindow = Byte.parseByte("30");
+    private static final Map<String, ThrottleTokenPerFingerprint> throttlingMap = new ConcurrentHashMap<String, ThrottleTokenPerFingerprint>();
+    private final int timeWindow;
+    private final byte maxNumberOfRequestsWithinTimeWindow;
 
-    public ConcurrentHashMapThrottling() {
-    }
-
-    public ConcurrentHashMapThrottling(int timeWindow, byte maxNumberOfRequestsWithinTimeWindow) {
+    public ConcurrentHashMapThrottling(int timeWindow, int maxNumberOfRequestsWithinTimeWindow) {
         this.timeWindow = timeWindow;
-        this.maxNumberOfRequestsWithinTimeWindow = maxNumberOfRequestsWithinTimeWindow;
+        this.maxNumberOfRequestsWithinTimeWindow = (byte) (Math.abs(maxNumberOfRequestsWithinTimeWindow) & Byte.MAX_VALUE);
     }
 
     @Override
     public boolean allow(String fingerPrint) {
 
-        if (throttlingMap.contains(fingerPrint)) {
+        if (throttlingMap.containsKey(fingerPrint)) {
             ThrottleTokenPerFingerprint tokenPerFingerprint = throttlingMap.get(fingerPrint);
 
             if (tokenPerFingerprint.getNumberOfRequests() < maxNumberOfRequestsWithinTimeWindow) {
@@ -60,7 +56,7 @@ public class ConcurrentHashMapThrottling implements IThrottleService {
     @Override
     public void postProcess(String fingerPrint) {
 
-        if (throttlingMap.contains(fingerPrint)) {
+        if (throttlingMap.containsKey(fingerPrint)) {
 
             if ((System.currentTimeMillis() - throttlingMap.get(fingerPrint).getTimeWindowStart()) > timeWindow) {
 

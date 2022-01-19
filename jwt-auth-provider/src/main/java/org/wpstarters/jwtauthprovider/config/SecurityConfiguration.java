@@ -18,8 +18,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.wpstarters.jwtauthprovider.config.entrypoint.AuthenticationEntryPointJwt;
 import org.wpstarters.jwtauthprovider.config.filters.AuthenticationTokenFilter;
 import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
+import org.wpstarters.jwtauthprovider.props.ThrottlingConfigurationProperties;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
+import org.wpstarters.jwtauthprovider.throttle.ConcurrentHashMapThrottling;
+import org.wpstarters.jwtauthprovider.throttle.IThrottleService;
 
 @Configuration
 @EnableWebSecurity

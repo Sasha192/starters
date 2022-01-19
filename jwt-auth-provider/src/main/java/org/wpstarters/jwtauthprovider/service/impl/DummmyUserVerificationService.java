@@ -12,7 +12,6 @@ import java.util.Map;
 public class DummmyUserVerificationService implements IUserVerificationService {
 
 
-
     @Override
     public boolean sendVerificationForRequest(IAuthenticationRequest authencationRequest) throws ExtendedAuthenticationException {
         return true;
@@ -27,4 +26,6 @@ public class DummmyUserVerificationService implements IUserVerificationService {
     public Map<String, Object> verifySocialAccount(String authorizationCode, ProviderType provider) {
         return null;
     }
+
+
 }

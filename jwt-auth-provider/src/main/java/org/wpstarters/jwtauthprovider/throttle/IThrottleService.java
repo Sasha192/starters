@@ -1,6 +1,6 @@
 package org.wpstarters.jwtauthprovider.throttle;
 
-import org.wpstarters.commontoolsstarter.exceptions.ThrottledException;
+import org.wpstarters.jwtauthprovider.exceptions.ThrottledException;
 
 public interface IThrottleService {
 
