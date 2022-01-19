@@ -36,20 +36,20 @@ public class SignInController {
     private static final Logger logger = LoggerFactory.getLogger(SignInController.class);
 
     private final AuthenticationManager authenticationManager;
-    private final IUserVerificationService IUserVerificationService;
+    private final IUserVerificationService userVerificationService;
     private final INonceStrategy nonceStrategy;
     private final ObjectMapper objectMapper;
     private final IUserDetailsService userDetailsService;
     private final TokenService tokenService;
 
     public SignInController(AuthenticationManager authenticationManager,
-                            IUserVerificationService IUserVerificationService,
+                            IUserVerificationService userVerificationService,
                             ObjectMapper objectMapper,
                             IUserDetailsService userDetailsService,
                             TokenService tokenService,
                             INonceStrategy nonceStrategy) {
         this.authenticationManager = authenticationManager;
-        this.IUserVerificationService = IUserVerificationService;
+        this.userVerificationService = userVerificationService;
         this.objectMapper = objectMapper;
         this.userDetailsService = userDetailsService;
         this.tokenService = tokenService;
@@ -64,7 +64,7 @@ public class SignInController {
         StateMessage errorMessage = new StateMessage("", false, ExceptionState.INTERNAL_SERVER_ERROR);
         try {
 
-            Map<String, Object> mapDetails = IUserVerificationService.verifySocialAccount(authorizationCode, ProviderType.valueOf(providerName));
+            Map<String, Object> mapDetails = userVerificationService.verifySocialAccount(authorizationCode, ProviderType.valueOf(providerName));
             if (mapDetails != null) {
 
                 CustomUserDetails socialDetails = objectMapper.convertValue(mapDetails, CustomUserDetails.class);
@@ -103,7 +103,7 @@ public class SignInController {
 
         try {
             if (nonceStrategy.validNonce(loginRequest.getNonce())) {
-                if (IUserVerificationService.verifyCodeForRequest(loginRequest)) {
+                if (userVerificationService.verifyCodeForRequest(loginRequest)) {
                     Authentication authentication = authenticationManager.authenticate(
                             new UsernamePasswordAuthenticationToken(
                                     loginRequest.getId(),
@@ -146,7 +146,7 @@ public class SignInController {
 
         try {
 
-            if (IUserVerificationService.sendVerificationForRequest(authenticationRequest)) {
+            if (userVerificationService.sendVerificationForRequest(authenticationRequest)) {
 
                 return nonceIsSentResponse();
 

@@ -11,7 +11,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.transaction.annotation.Transactional;
+import org.wpstarters.jwtauthprovider.config.context.RequestFingerprintUtil;
 import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
 import org.wpstarters.jwtauthprovider.model.RefreshToken;
 import org.wpstarters.jwtauthprovider.model.RefreshTokenStatus;
@@ -19,6 +19,7 @@ import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 import org.wpstarters.jwtauthprovider.repository.IRefreshTokenRepository;
 import org.wpstarters.jwtauthprovider.service.IEncryptionKeys;
+import org.wpstarters.jwtauthprovider.service.ITokenService;
 
 import javax.servlet.http.Cookie;
 import java.time.Duration;
@@ -27,7 +28,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-public class TokenService {
+public class TokenService implements ITokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
     private static final String REFRESH_TOKEN_COOKIE = "REFRESH_TOKEN_COOKIE";
@@ -48,53 +49,31 @@ public class TokenService {
         this.userDetailsService = userDetailsService;
     }
 
+    @Override
     public String generateJwtToken(CustomUserDetails userDetails)
             throws JsonProcessingException {
 
         // generate jwt token
-        Map<String, Object> extraDetails = userDetails.getPublicDetails();
-        extraDetails.put("authorities", userDetails.getAuthorities());
-        extraDetails.put("provider", userDetails.getProviderType());
-
-        String tokenId = UUID.randomUUID().toString();
-
-        long jwtExpirationTimeInMs = Duration.ofMinutes(10).toMillis();
-
-        String token = Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationTimeInMs))
-                .setIssuer(issuer)
-                .addClaims(extraDetails)
-                .setId(tokenId)
-                .signWith(SignatureAlgorithm.RS256, keyPairSupplier.keyPair().getPrivate())
-                .compact();
+        String jwtId = UUID.randomUUID().toString();
+        String token = buildJwt(userDetails, jwtId);
 
         // generate refresh token
         UUID refreshTokenId = UUID.randomUUID();
-
-        long twoWeeks = ChronoUnit.WEEKS.getDuration().toMillis() * 2;
-
-        RefreshToken refreshToken = new RefreshToken.Builder()
-                .id(refreshTokenId)
-                .tokenId(tokenId)
-                .unixExpired(System.currentTimeMillis() + twoWeeks)
-                .unixCreated(System.currentTimeMillis())
-                .status(RefreshTokenStatus.VALID)
-                .username(userDetails.getUsername())
-                .build();
+        RefreshToken refreshToken = buildRefreshToken(refreshTokenId, userDetails, jwtId);
 
         // set refresh token to cookies
-        if (refreshTokenRepository.findRefreshTokenByUsernameEquals(userDetails.getUsername()).isPresent()) {
-            refreshTokenRepository.deleteRefreshTokenByUsernameEquals(userDetails.getUsername());
-        }
         refreshTokenRepository.save(refreshToken);
         setRefreshCookie(refreshToken);
+
+        // save token history
+
+
 
         // return jwt token
         return token;
     }
 
+    @Override
     public String refreshToken(String jwtToken) throws JsonProcessingException {
 
         Claims claims = extractClaims(jwtToken);
@@ -127,11 +106,7 @@ public class TokenService {
 
     }
 
-    private boolean validateRefreshTokenAndJwt(String username, String tokenId, RefreshToken refreshToken) {
-        return refreshToken.getTokenId().equals(tokenId) &&
-                refreshToken.getUsername().equals(username);
-    }
-
+    @Override
     public String getUserNameFromJwtToken(String token) {
 
         Claims claims = extractClaims(token);
@@ -142,16 +117,7 @@ public class TokenService {
         throw new ExtendedAuthenticationException("Expired token", ExceptionState.EXPIRED_TOKEN);
     }
 
-    private Claims extractClaims(String token) {
-        return Jwts.parser().setSigningKey(keyPairSupplier.keyPair().getPrivate())
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private boolean validateClaims(Claims claims) {
-        return new Date(System.currentTimeMillis()).before(claims.getExpiration());
-    }
-
+    @Override
     public boolean validateJwtToken(String authToken) throws ExtendedAuthenticationException {
         String errorMessage;
         ExceptionState exceptionState = ExceptionState.INVALID_TOKEN;
@@ -183,6 +149,18 @@ public class TokenService {
         throw new ExtendedAuthenticationException(errorMessage, exceptionState);
     }
 
+    // ----- PRIVATE METHODS -----
+
+    private Claims extractClaims(String token) {
+        return Jwts.parser().setSigningKey(keyPairSupplier.keyPair().getPrivate())
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    private boolean validateClaims(Claims claims) {
+        return new Date(System.currentTimeMillis()).before(claims.getExpiration());
+    }
+
     private void setRefreshCookie(RefreshToken refreshToken) {
         Cookie cookieRefreshToken = new Cookie(REFRESH_TOKEN_COOKIE, refreshToken.getId().toString());
         CookieUtils.addSecureCookie(cookieRefreshToken, true);
@@ -212,6 +190,50 @@ public class TokenService {
         }
 
         throw new ExtendedAuthenticationException("Can not retrieve refresh token", ExceptionState.INVALID_REFRESH_TOKEN);
+    }
+
+    private boolean validateRefreshTokenAndJwt(String username, String tokenId, RefreshToken refreshToken) {
+        return refreshToken.getTokenId().equals(tokenId) &&
+                refreshToken.getUsername().equals(username);
+    }
+
+    private RefreshToken buildRefreshToken(UUID refreshTokenId, CustomUserDetails userDetails, String tokenId) {
+
+        long twoWeeks = ChronoUnit.WEEKS.getDuration().toMillis() * 2;
+
+        return new RefreshToken.Builder()
+                .id(refreshTokenId)
+                .tokenId(tokenId)
+                .ipAddress(RequestFingerprintUtil.requestIpAddress())
+                .userAgent(RequestFingerprintUtil.requestUserAgent())
+                .unixExpired(System.currentTimeMillis() + twoWeeks)
+                .unixCreated(System.currentTimeMillis())
+                .status(RefreshTokenStatus.VALID)
+                .username(userDetails.getUsername())
+                .build();
+    }
+
+    private String buildJwt(CustomUserDetails userDetails, String tokenId) {
+        Map<String, Object> extraDetails = userDetails.getPublicDetails();
+        extraDetails.put("authorities", userDetails.getAuthorities());
+        extraDetails.put("provider", userDetails.getProviderType());
+
+        long jwtExpirationTimeInMs = Duration.ofMinutes(10).toMillis();
+
+        String requestIpAddress = RequestFingerprintUtil.requestIpAddress();
+        String requestUserAgent = RequestFingerprintUtil.requestUserAgent();
+
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationTimeInMs))
+                .setIssuer(issuer)
+                .claim("owner_ip", requestIpAddress)
+                .claim("owner_user-agent", requestUserAgent)
+                .addClaims(extraDetails)
+                .setId(tokenId)
+                .signWith(SignatureAlgorithm.RS256, keyPairSupplier.keyPair().getPrivate())
+                .compact();
     }
 
 

@@ -20,7 +20,7 @@ public class HttpContextHolder implements HandlerInterceptor {
     }
 
     @Override
-    public void postHandle(HttpServletRequest req, HttpServletResponse res, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest req, HttpServletResponse res, Object handler, ModelAndView modelAndView) {
         request.remove();
         response.remove();
     }

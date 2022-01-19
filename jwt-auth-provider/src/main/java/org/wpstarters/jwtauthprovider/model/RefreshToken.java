@@ -21,6 +21,14 @@ public class RefreshToken {
     @Length(max = 512, min = 1, message = "Please, specify username no more than 512 characters and no less than 1 character")
     private String username;
 
+    @Column(name = "ip_address", nullable = false)
+    @Length(max = 64, min = 16, message = "Please, specify ipAddress no more than 64 characters and no less than 16 characters")
+    private String ipAddress;
+
+    @Column(name = "user_agent", nullable = false)
+    @Length(max = 512, message = "Please, specify userAgent no more than 512 characters")
+    private String userAgent;
+
     @Column(nullable = false)
     private long unixCreated;
 
@@ -33,6 +41,9 @@ public class RefreshToken {
     @Enumerated(EnumType.ORDINAL)
     @Column(nullable = false)
     private RefreshTokenStatus status;
+
+    public RefreshToken() {
+    }
 
     public UUID getId() {
         return id;
@@ -64,9 +75,19 @@ public class RefreshToken {
 
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
     public static final class Builder {
         private UUID id;
         private String username;
+        private String ipAddress = "";
+        private String userAgent = "";
         private long unixCreated;
         private long unixExpired;
         private String tokenId;
@@ -90,6 +111,16 @@ public class RefreshToken {
             return this;
         }
 
+        public Builder ipAddress(String ipAddress) {
+            this.ipAddress = ipAddress;
+            return this;
+        }
+
+        public Builder userAgent(String userAgent) {
+            this.userAgent = userAgent;
+            return this;
+        }
+
         public Builder unixCreated(long unixCreated) {
             this.unixCreated = unixCreated;
             return this;
@@ -108,6 +139,8 @@ public class RefreshToken {
         public RefreshToken build() {
             RefreshToken refreshToken = new RefreshToken();
             refreshToken.username = this.username;
+            refreshToken.ipAddress = this.ipAddress;
+            refreshToken.userAgent = this.userAgent;
             refreshToken.unixExpired = this.unixExpired;
             refreshToken.id = this.id;
             refreshToken.unixCreated = this.unixCreated;

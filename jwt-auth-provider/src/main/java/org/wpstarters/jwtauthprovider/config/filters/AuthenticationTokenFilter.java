@@ -11,8 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.wpstarters.jwtauthprovider.api.state.StateMessage;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
+import org.wpstarters.jwtauthprovider.service.ITokenService;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
-import org.wpstarters.jwtauthprovider.service.impl.TokenService;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,10 +28,10 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private static final String BEARER = "Bearer";
     private final ObjectMapper objectMapper;
 
-    private final TokenService tokenService;
+    private final ITokenService tokenService;
     private final IUserDetailsService userDetailsService;
 
-    public AuthenticationTokenFilter(TokenService tokenService,
+    public AuthenticationTokenFilter(ITokenService tokenService,
                                      IUserDetailsService userDetailsService,
                                      ObjectMapper objectMapper) {
         this.tokenService = tokenService;

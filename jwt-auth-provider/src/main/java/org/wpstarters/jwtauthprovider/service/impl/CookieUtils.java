@@ -3,7 +3,7 @@ package org.wpstarters.jwtauthprovider.service.impl;
 import org.apache.tomcat.util.http.CookieProcessorBase;
 import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 import org.springframework.web.util.WebUtils;
-import org.wpstarters.jwtauthprovider.config.context.HttpContextHolder;
+import org.wpstarters.commontoolsstarter.context.HttpContextHolder;
 import org.wpstarters.jwtauthprovider.exceptions.ExceptionState;
 import org.wpstarters.jwtauthprovider.exceptions.ExtendedAuthenticationException;
 

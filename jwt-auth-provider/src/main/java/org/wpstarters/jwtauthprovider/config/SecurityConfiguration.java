@@ -12,14 +12,19 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.wpstarters.jwtauthprovider.config.entrypoint.AuthenticationEntryPointJwt;
 import org.wpstarters.jwtauthprovider.config.filters.AuthenticationTokenFilter;
 import org.wpstarters.jwtauthprovider.props.CorsConfigurationProperties;
+import org.wpstarters.jwtauthprovider.props.ThrottlingConfigurationProperties;
+import org.wpstarters.jwtauthprovider.service.ITokenService;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.impl.TokenService;
+import org.wpstarters.jwtauthprovider.throttle.ConcurrentHashMapThrottling;
+import org.wpstarters.jwtauthprovider.throttle.IThrottleService;
 
 @Configuration
 @EnableWebSecurity
@@ -30,12 +35,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final AuthenticationEntryPointJwt unauthorizedHandler;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
-    private final TokenService tokenService;
+    private final ITokenService tokenService;
     private final CorsConfigurationProperties corsConfigurationProperties;
 
     public SecurityConfiguration(IUserDetailsService userDetailsService,
                                  PasswordEncoder passwordEncoder,
-                                 TokenService tokenService,
+                                 ITokenService tokenService,
                                  CorsConfigurationProperties corsConfigurationProperties,
                                  ObjectMapper objectMapper) {
         this.userDetailsService = userDetailsService;
@@ -46,7 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.corsConfigurationProperties = corsConfigurationProperties;
     }
 
-    private AuthenticationTokenFilter authenticationJwtTokenFilter(TokenService tokenService,
+    private AuthenticationTokenFilter authenticationJwtTokenFilter(ITokenService tokenService,
                                                                   IUserDetailsService userDetailsService,
                                                                   ObjectMapper objectMapper) {
         return new AuthenticationTokenFilter(tokenService, userDetailsService, objectMapper);
@@ -67,7 +72,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().configurationSource(configurationSourceCors(corsConfigurationProperties))
-                .and().csrf().disable()
+                .and().csrf().csrfTokenRepository(new CookieCsrfTokenRepository())
+                .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().anyRequest().permitAll();
