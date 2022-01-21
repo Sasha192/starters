@@ -1,6 +1,7 @@
 package org.wpstarters.jwtauthprovider.model;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.Length;
@@ -175,7 +176,9 @@ public class CustomUserDetails implements UserDetails {
             customUserDetails.setBasicAccount(basicAccount);
             customUserDetails.setProviderType(providerType);
             customUserDetails.setPublicDetails(publicDetails);
-            customUserDetails.password = encoder.encode(this.password);
+            if (StringUtils.isNotBlank(this.password)) {
+                customUserDetails.password = encoder.encode(this.password);
+            }
             customUserDetails.enabled = this.enabled;
             customUserDetails.accountNonExpired = this.accountNonExpired;
             customUserDetails.username = this.username;

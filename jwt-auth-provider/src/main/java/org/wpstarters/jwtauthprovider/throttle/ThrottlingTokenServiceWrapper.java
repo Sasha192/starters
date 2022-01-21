@@ -32,6 +32,8 @@ public class ThrottlingTokenServiceWrapper implements ITokenService {
         try {
             if (throttleService.allow(usernameFingerprint) && throttleService.allow(fingerPrint)) {
 
+                throttleService.clean(usernameFingerprint);
+                throttleService.clean(fingerPrint);
                 return tokenService.generateJwtToken(userDetails);
 
             }
@@ -57,6 +59,8 @@ public class ThrottlingTokenServiceWrapper implements ITokenService {
         try {
             if (throttleService.allow(usernameFingerprint) && throttleService.allow(fingerPrint)) {
 
+                throttleService.clean(usernameFingerprint);
+                throttleService.clean(fingerPrint);
                 return tokenService.refreshToken(jwtToken);
 
             }

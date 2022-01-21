@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConcurrentHashMapThrottling implements IThrottleService {
 
-    private static final Map<String, ThrottleTokenPerFingerprint> throttlingMap = new ConcurrentHashMap<String, ThrottleTokenPerFingerprint>();
+    private static final Map<String, ThrottleTokenPerFingerprint> throttlingMap = new ConcurrentHashMap<>(128);
     private final int timeWindow;
     private final byte maxNumberOfRequestsWithinTimeWindow;
 
@@ -65,6 +65,13 @@ public class ConcurrentHashMapThrottling implements IThrottleService {
             }
 
         }
+
+    }
+
+    @Override
+    public void clean(String fingerPrint) {
+
+        throttlingMap.remove(fingerPrint);
 
     }
 

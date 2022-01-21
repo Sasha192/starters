@@ -1,3 +1,9 @@
+test-environment:
+    enabled: ${TEST_ENVIRONMENT_ENABLED}
+
+
+user-verification: ${USER_VERIFICATION}
+
 jwt-properties:
     issuer: "someone"
 
@@ -34,3 +40,16 @@ spring:
         default-property-inclusion: non_null
     liquibase:
         enabled: false
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: sasha192.bunin@gmail.com
+        password: pczo lekf wcia kyxt
+        properties:
+            smtp:
+                auth: true
+                starttls:
+                    enable: true
+
+
+

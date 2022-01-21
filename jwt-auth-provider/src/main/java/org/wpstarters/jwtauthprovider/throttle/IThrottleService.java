@@ -8,4 +8,6 @@ public interface IThrottleService {
 
     void postProcess(String fingerPrint);
 
+    void clean(String fingerPrint);
+
 }

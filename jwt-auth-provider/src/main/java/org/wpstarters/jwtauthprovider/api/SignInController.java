@@ -1,7 +1,6 @@
 package org.wpstarters.jwtauthprovider.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wpstarters.jwtauthprovider.api.state.StateMessage;
-import org.wpstarters.jwtauthprovider.service.impl.TokenService;
+import org.wpstarters.jwtauthprovider.dto.SocialAccountInfo;
+import org.wpstarters.jwtauthprovider.service.ITokenService;
 import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
 import org.wpstarters.jwtauthprovider.dto.IAuthenticationRequest;
 import org.wpstarters.jwtauthprovider.dto.IStateMessage;
@@ -28,6 +28,7 @@ import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.INonceStrategy;
 import org.wpstarters.jwtauthprovider.service.IUserVerificationService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -38,19 +39,16 @@ public class SignInController {
     private final AuthenticationManager authenticationManager;
     private final IUserVerificationService userVerificationService;
     private final INonceStrategy nonceStrategy;
-    private final ObjectMapper objectMapper;
     private final IUserDetailsService userDetailsService;
-    private final TokenService tokenService;
+    private final ITokenService tokenService;
 
     public SignInController(AuthenticationManager authenticationManager,
                             IUserVerificationService userVerificationService,
-                            ObjectMapper objectMapper,
                             IUserDetailsService userDetailsService,
-                            TokenService tokenService,
+                            ITokenService tokenService,
                             INonceStrategy nonceStrategy) {
         this.authenticationManager = authenticationManager;
         this.userVerificationService = userVerificationService;
-        this.objectMapper = objectMapper;
         this.userDetailsService = userDetailsService;
         this.tokenService = tokenService;
         this.nonceStrategy = nonceStrategy;
@@ -62,12 +60,14 @@ public class SignInController {
                                           @RequestParam(name = "state") String providerName) {
 
         StateMessage errorMessage = new StateMessage("", false, ExceptionState.INTERNAL_SERVER_ERROR);
+
         try {
 
-            Map<String, Object> mapDetails = userVerificationService.verifySocialAccount(authorizationCode, ProviderType.valueOf(providerName));
-            if (mapDetails != null) {
+            ProviderType providerType = ProviderType.valueOf(providerName);
+            SocialAccountInfo socialAccountInfo = userVerificationService.verifySocialAccount(authorizationCode, providerType);
+            if (socialAccountInfo != null && socialAccountInfo.isEmailVerified()) {
 
-                CustomUserDetails socialDetails = objectMapper.convertValue(mapDetails, CustomUserDetails.class);
+                CustomUserDetails socialDetails = toCustomUserDetails(socialAccountInfo, providerType);
                 String token = loginSocialUser(socialDetails);
 
                 return ResponseEntity.ok(new StateMessage(token, true, null));
@@ -145,15 +145,8 @@ public class SignInController {
     private ResponseEntity<? extends IStateMessage> sendVerificationCode(IAuthenticationRequest authenticationRequest) {
 
         try {
-
-            if (userVerificationService.sendVerificationForRequest(authenticationRequest)) {
-
+                userVerificationService.sendVerificationForRequest(authenticationRequest);
                 return nonceIsSentResponse();
-
-            }
-
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-                    .body(new StateMessage("Sorry, something went wrong. Please, try later", false, ExceptionState.INTERNAL_SERVER_ERROR));
 
         } catch (RuntimeException exception) {
 
@@ -211,6 +204,21 @@ public class SignInController {
         // should not reach there;
 
         throw new UsernameNotFoundException("Username not found");
+
+    }
+
+    private CustomUserDetails toCustomUserDetails(SocialAccountInfo socialAccountInfo, ProviderType providerType) {
+
+        Map<String, Object> publicDetails = new HashMap<>();
+        publicDetails.put("picture", socialAccountInfo.getPicture());
+        publicDetails.put("name", socialAccountInfo.getName());
+
+        return new CustomUserDetails.Builder()
+                .basicAccount(false)
+                .username(socialAccountInfo.getEmail())
+                .publicDetails(publicDetails)
+                .providerType(providerType)
+                .build();
 
     }
 

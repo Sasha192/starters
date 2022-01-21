@@ -1,7 +1,6 @@
 package org.wpstarters.jwtauthprovider.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wpstarters.jwtauthprovider.api.state.StateMessage;
-import org.wpstarters.jwtauthprovider.service.impl.TokenService;
+import org.wpstarters.jwtauthprovider.dto.SocialAccountInfo;
+import org.wpstarters.jwtauthprovider.service.ITokenService;
 import org.wpstarters.jwtauthprovider.model.CustomUserDetails;
 import org.wpstarters.jwtauthprovider.dto.IAuthenticationRequest;
 import org.wpstarters.jwtauthprovider.dto.IStateMessage;
@@ -25,6 +25,7 @@ import org.wpstarters.jwtauthprovider.service.INonceStrategy;
 import org.wpstarters.jwtauthprovider.service.IUserDetailsService;
 import org.wpstarters.jwtauthprovider.service.IUserVerificationService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -32,21 +33,18 @@ public class SignUpController {
 
     private static final Logger logger = LoggerFactory.getLogger(SignUpController.class);
 
-    private final IUserVerificationService IUserVerificationService;
+    private final IUserVerificationService userVerificationService;
     private final INonceStrategy nonceStrategy;
-    private final ObjectMapper objectMapper;
     private final IUserDetailsService userDetailsService;
-    private final TokenService tokenService;
+    private final ITokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
-    public SignUpController(IUserVerificationService IUserVerificationService,
-                            ObjectMapper objectMapper,
+    public SignUpController(IUserVerificationService userVerificationService,
                             IUserDetailsService userDetailsService,
-                            TokenService tokenService,
+                            ITokenService tokenService,
                             INonceStrategy nonceStrategy,
                             PasswordEncoder passwordEncoder) {
-        this.IUserVerificationService = IUserVerificationService;
-        this.objectMapper = objectMapper;
+        this.userVerificationService = userVerificationService;
         this.userDetailsService = userDetailsService;
         this.tokenService = tokenService;
         this.nonceStrategy = nonceStrategy;
@@ -66,7 +64,7 @@ public class SignUpController {
         try {
 
             if (nonceStrategy.validNonce(tokenRequest.getNonce())) {
-                if (IUserVerificationService.verifyCodeForRequest(tokenRequest)) {
+                if (userVerificationService.verifyCodeForRequest(tokenRequest)) {
 
                     CustomUserDetails userDetails = retrieveBasicUserDetails(tokenRequest);
                     userDetails = registerUser(userDetails);
@@ -119,10 +117,11 @@ public class SignUpController {
         StateMessage errorMessage = new StateMessage("", false, ExceptionState.INTERNAL_SERVER_ERROR);
         try {
 
-            Map<String, Object> mapDetails = IUserVerificationService.verifySocialAccount(authorizationCode, ProviderType.valueOf(providerName));
-            if (mapDetails != null) {
+            ProviderType providerType = ProviderType.valueOf(providerName);
+            SocialAccountInfo socialAccountInfo = userVerificationService.verifySocialAccount(authorizationCode, providerType);
+            if (socialAccountInfo != null && socialAccountInfo.isEmailVerified()) {
 
-                CustomUserDetails socialDetails = objectMapper.convertValue(mapDetails, CustomUserDetails.class);
+                CustomUserDetails socialDetails = toCustomUserDetails(socialAccountInfo, providerType);
                 socialDetails = registerUser(socialDetails);
                 String token = tokenService.generateJwtToken(socialDetails);
 
@@ -133,7 +132,8 @@ public class SignUpController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(errorMessage);
 
-        } catch (RuntimeException | JsonProcessingException exception) {
+        }
+        catch (RuntimeException | JsonProcessingException exception) {
 
             logger.error("Exception occurred, while /signup/social, ", exception);
             errorMessage.setMessage("Something went wrong. Please, try later");
@@ -148,14 +148,10 @@ public class SignUpController {
 
         try {
 
-            if (IUserVerificationService.sendVerificationForRequest(authenticationRequest)) {
-                return nonceIsSentResponse();
-            }
+            userVerificationService.sendVerificationForRequest(authenticationRequest);
+            return nonceIsSentResponse();
 
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-                    .body(new StateMessage("Sorry, something went wrong. Please, try later", false, ExceptionState.INTERNAL_SERVER_ERROR));
-
-        } catch (RuntimeException exception) {
+        }  catch (RuntimeException exception) {
 
             logger.error("Exception occurred, sending verification request for {}", authenticationRequest, exception);
             if (exception instanceof AuthenticationException) {
@@ -216,5 +212,19 @@ public class SignUpController {
 
     }
 
+    private CustomUserDetails toCustomUserDetails(SocialAccountInfo socialAccountInfo, ProviderType providerType) {
+
+        Map<String, Object> publicDetails = new HashMap<>();
+        publicDetails.put("picture", socialAccountInfo.getPicture());
+        publicDetails.put("name", socialAccountInfo.getName());
+
+        return new CustomUserDetails.Builder()
+                .basicAccount(false)
+                .username(socialAccountInfo.getEmail())
+                .publicDetails(publicDetails)
+                .providerType(providerType)
+                .build();
+
+    }
 
 }
